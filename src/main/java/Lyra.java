@@ -52,106 +52,205 @@ public class Lyra {
                 break;
 
             case "mark":
-                String taskNum = inputString.split(" ")[1];
-                int idx = Integer.parseInt(taskNum);
-                Task task = todoList[idx - 1];
-                task.markDone();
+                try {
+                    String[] parts = inputString.split(" ", 2);
+                    if (parts.length < 2 || parts[1].isBlank()) {
+                        throw new LyraException("Please specify a task number.");
+                    }
 
-                String markString =
-                        """
-                        ____________________________________________________________
-                          Great! I've marked this task as done:
-                          [%s] %s
-                        ____________________________________________________________
-                        """.formatted(task.getStatusIcon(), task.getDescription());
+                    String taskNum = parts[1].trim();
+                    if (!taskNum.matches("\\d+")) {
+                        throw new LyraException("Please specify a task number.");
+                    }
 
-                System.out.println(markString);
+                    int idx = Integer.parseInt(taskNum);
+                    if (idx <= 0 || idx > size) {
+                        throw new LyraException("Task number out of range.");
+                    }
+
+                    Task task = todoList[idx - 1];
+                    if (task == null) {
+                        throw new LyraException("Task number out of range.");
+                    }
+
+                    task.markDone();
+
+                    String markString =
+                            """
+                            ____________________________________________________________
+                              Great! I've marked this task as done:
+                              [%s] %s
+                            ____________________________________________________________
+                            """.formatted(task.getStatusIcon(), task.getDescription());
+
+                    System.out.println(markString);
+                } catch (LyraException e) {
+                    System.out.println(
+                            """
+                            ____________________________________________________________
+                             Oh No!!! %s
+                            ____________________________________________________________
+                            """.formatted(e.getMessage()));
+                }
                 break;
 
             case "unmark":
-                String taskNum2 = inputString.split(" ")[1];
-                int idx2 = Integer.parseInt(taskNum2);
-                Task task2 = todoList[idx2 - 1];
-                task2.unmarkDone();
+                try {
+                    String[] parts = inputString.split(" ", 2);
+                    if (parts.length < 2 || parts[1].isBlank()) {
+                        throw new LyraException("Please specify a task number.");
+                    }
 
-                String unmarkString =
-                        """
-                        ____________________________________________________________
-                          OK, I've marked this task as not done yet:
-                          [%s] %s
-                        ____________________________________________________________
-                        """.formatted(task2.getStatusIcon(), task2.getDescription());
+                    String taskNum = parts[1].trim();
+                    if (!taskNum.matches("\\d+")) {
+                        throw new LyraException("Please specify a task number.");
+                    }
 
-                System.out.println(unmarkString);
+                    int idx = Integer.parseInt(taskNum);
+                    if (idx <= 0 || idx > size) {
+                        throw new LyraException("Task number out of range.");
+                    }
+
+                    Task task = todoList[idx - 1];
+                    if (task == null) {
+                        throw new LyraException("Task number out of range.");
+                    }
+
+                    task.unmarkDone();
+
+                    String unmarkString =
+                            """
+                            ____________________________________________________________
+                              OK, I've marked this task as not done yet:
+                              [%s] %s
+                            ____________________________________________________________
+                            """.formatted(task.getStatusIcon(), task.getDescription());
+
+                    System.out.println(unmarkString);
+                } catch (LyraException e) {
+                    System.out.println(
+                            """
+                            ____________________________________________________________
+                             Oh No!!! %s
+                            ____________________________________________________________
+                            """.formatted(e.getMessage()));
+                }
                 break;
 
             case "todo":
-                String todoDescription = inputString.split(" ", 2)[1].trim();
-                Task newTodo = new Todo(todoDescription);
-                todoList[size] = newTodo;
-                size++;
+                try {
+                    String[] parts = inputString.split(" ", 2);
+                    if (parts.length < 2 || parts[1].trim().isEmpty()) {
+                        throw new LyraException("The description of a todo cannot be empty.");
+                    }
 
-                String addedTodoString =
-                        """
-                        ____________________________________________________________
-                          Got it. I've added this task: 
-                            %s
-                          Now you have %d tasks in the list.
-                        ____________________________________________________________
-                        """.formatted(newTodo.toString(), size);
+                    String todoDescription = parts[1].trim();
 
-                System.out.println(addedTodoString);
+                    Task newTodo = new Todo(todoDescription);
+                    todoList[size] = newTodo;
+                    size++;
+
+                    String addedTodoString =
+                            """
+                            ____________________________________________________________
+                              Got it. I've added this task: 
+                                %s
+                              Now you have %d tasks in the list.
+                            ____________________________________________________________
+                            """.formatted(newTodo.toString(), size);
+
+                    System.out.println(addedTodoString);
+                } catch (LyraException e) {
+                    System.out.println(
+                            """
+                            ____________________________________________________________
+                             Oh No!!! %s
+                            ____________________________________________________________
+                            """.formatted(e.getMessage()));
+                }
                 break;
 
             case "event":
-                String[] parts = inputString.split(" ", 2);
-                String rest = parts[1];
+                try {
+                    String[] parts = inputString.split(" ", 2);
+                    if (parts.length < 2) {
+                        throw new LyraException("Please specify event time using /from and /to.");
+                    }
 
-                String[] descAndFrom = rest.split(" /from ", 2);
-                String eventDescription = descAndFrom[0];
+                    String rest = parts[1];
+                    if (!rest.contains(" /from ") || !rest.contains(" /to ")) {
+                        throw new LyraException("Please specify event time using /from and /to.");
+                    }
 
-                String[] fromAndTo = descAndFrom[1].split(" /to ", 2);
-                String from = fromAndTo[0];
-                String to = fromAndTo[1];
+                    String[] descAndFrom = rest.split(" /from ", 2);
+                    String eventDescription = descAndFrom[0];
 
-                Task newEvent = new Event(eventDescription, from, to);
-                todoList[size] = newEvent;
-                size++;
+                    String[] fromAndTo = descAndFrom[1].split(" /to ", 2);
+                    String from = fromAndTo[0];
+                    String to = fromAndTo[1];
 
-                String addedEventString =
-                        """
-                        ____________________________________________________________
-                          Got it. I've added this task:
-                            %s
-                          Now you have %d tasks in the list.
-                        ____________________________________________________________
-                        """.formatted(newEvent.toString(), size);
+                    Task newEvent = new Event(eventDescription, from, to);
+                    todoList[size] = newEvent;
+                    size++;
 
-                System.out.println(addedEventString);
+                    String addedEventString =
+                            """
+                            ____________________________________________________________
+                              Got it. I've added this task:
+                                %s
+                              Now you have %d tasks in the list.
+                            ____________________________________________________________
+                            """.formatted(newEvent.toString(), size);
+
+                    System.out.println(addedEventString);
+                } catch (LyraException e) {
+                    System.out.println(
+                            """
+                            ____________________________________________________________
+                             Oh No!!! %s
+                            ____________________________________________________________
+                            """.formatted(e.getMessage()));
+                }
                 break;
 
             case "deadline":
-                String[] parts2 = inputString.split(" ", 2);
-                String rest2 = parts2[1];
+                try {
+                    String[] parts = inputString.split(" ", 2);
+                    if (parts.length < 2) {
+                        throw new LyraException("Please specify a deadline using /by.");
+                    }
 
-                String[] descAndBy = rest2.split(" /by ", 2);
-                String deadlineDescription = descAndBy[0];
-                String by = descAndBy[1];
+                    String rest = parts[1];
+                    if (!rest.contains(" /by ")) {
+                        throw new LyraException("Please specify a deadline using /by.");
+                    }
 
-                Task newDeadline = new Deadline(deadlineDescription, by);
-                todoList[size] = newDeadline;
-                size++;
+                    String[] descAndBy = rest.split(" /by ", 2);
+                    String deadlineDescription = descAndBy[0];
+                    String by = descAndBy[1];
 
-                String addedDeadlineString =
-                        """
-                        ____________________________________________________________
-                          Got it. I've added this task:
-                            %s
-                          Now you have %d tasks in the list.
-                        ____________________________________________________________
-                        """.formatted(newDeadline.toString(), size);
+                    Task newDeadline = new Deadline(deadlineDescription, by);
+                    todoList[size] = newDeadline;
+                    size++;
 
-                System.out.println(addedDeadlineString);
+                    String addedDeadlineString =
+                            """
+                            ____________________________________________________________
+                              Got it. I've added this task:
+                                %s
+                              Now you have %d tasks in the list.
+                            ____________________________________________________________
+                            """.formatted(newDeadline.toString(), size);
+
+                    System.out.println(addedDeadlineString);
+                } catch (LyraException e) {
+                    System.out.println(
+                            """
+                            ____________________________________________________________
+                             Oh No!!! %s
+                            ____________________________________________________________
+                            """.formatted(e.getMessage()));
+                }
                 break;
 
             default:
