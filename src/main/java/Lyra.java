@@ -47,7 +47,7 @@ public class Lyra {
                     listString += ("  " + (i + 1) + "." + task.toString() + "\n");
                 }
 
-                listString += "____________________________________________________________";
+                listString += "____________________________________________________________\n";
                 System.out.println(listString);
                 break;
 
