@@ -289,6 +289,59 @@ public class Lyra {
                 }
                 break;
 
+            case "find":
+                try {
+                    String[] parts = inputString.split(" ", 2);
+                    if (parts.length < 2 || parts[1].isBlank()) {
+                        throw new LyraException("Please specify a task type (todo, deadline, or event).");
+                    }
+
+                    String typeStr = parts[1].trim().toLowerCase();
+                    TaskType filterType;
+
+                    if (typeStr.equals("todo")) {
+                        filterType = TaskType.TODO;
+                    } else if (typeStr.equals("deadline")) {
+                        filterType = TaskType.DEADLINE;
+                    } else if (typeStr.equals("event")) {
+                        filterType = TaskType.EVENT;
+                    } else {
+                        throw new LyraException("Invalid task type. Use: todo, deadline, or event.");
+                    }
+
+                    String findString = 
+                            """
+                            ____________________________________________________________
+                              Here are your %s tasks:
+                            """.formatted(typeStr);
+
+                    boolean found = false;
+                    int displayIndex = 1;
+                    for (int i = 0; i < todoList.size(); i++) {
+                        Task task = todoList.get(i);
+                        if (task.getType() == filterType) {
+                            findString += ("  " + displayIndex + "." + task.toString() + "\n");
+                            displayIndex++;
+                            found = true;
+                        }
+                    }
+
+                    if (!found) {
+                        throw new LyraException("No " + typeStr + " tasks found.");
+                    }
+
+                    findString += "____________________________________________________________\n";
+                    System.out.println(findString);
+                } catch (LyraException e) {
+                    System.out.println(
+                            """
+                            ____________________________________________________________
+                             Oh No!!! %s
+                            ____________________________________________________________
+                            """.formatted(e.getMessage()));
+                }
+                break;
+
             default:
                 Task newTask = new Task(inputString);
                 todoList.add(newTask);
