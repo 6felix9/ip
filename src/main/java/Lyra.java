@@ -6,10 +6,13 @@ public class Lyra {
                          Hello! I'm Lyra
                          What can I do for you?
                         ____________________________________________________________
+                        """;
+        String exitString =
+                        """
                          Bye. Hope to see you again soon!
-                        ____________________________________________________________
-                        """ 
+                        ____________________________________________________________        
+                        """;
         ;
-        System.out.println(welcomeString);
+        System.out.println(welcomeString + exitString);
     }
 }
