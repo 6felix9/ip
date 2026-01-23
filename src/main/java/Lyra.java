@@ -1,10 +1,10 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Lyra {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Task[] todoList = new Task[100];
-        int size = 0;
+        ArrayList<Task> todoList = new ArrayList<>(100);
 
         String welcomeString =
                 """
@@ -42,8 +42,8 @@ public class Lyra {
                           Here are the tasks in your list:
                         """;
                                 
-                for (int i = 0; i < size; i++) {
-                    Task task = todoList[i];
+                for (int i = 0; i < todoList.size(); i++) {
+                    Task task = todoList.get(i);
                     listString += ("  " + (i + 1) + "." + task.toString() + "\n");
                 }
 
@@ -64,11 +64,11 @@ public class Lyra {
                     }
 
                     int idx = Integer.parseInt(taskNum);
-                    if (idx <= 0 || idx > size) {
+                    if (idx <= 0 || idx > todoList.size()) {
                         throw new LyraException("Task number out of range.");
                     }
 
-                    Task task = todoList[idx - 1];
+                    Task task = todoList.get(idx - 1);
                     if (task == null) {
                         throw new LyraException("Task number out of range.");
                     }
@@ -107,11 +107,11 @@ public class Lyra {
                     }
 
                     int idx = Integer.parseInt(taskNum);
-                    if (idx <= 0 || idx > size) {
+                    if (idx <= 0 || idx > todoList.size()) {
                         throw new LyraException("Task number out of range.");
                     }
 
-                    Task task = todoList[idx - 1];
+                    Task task = todoList.get(idx - 1);
                     if (task == null) {
                         throw new LyraException("Task number out of range.");
                     }
@@ -147,8 +147,7 @@ public class Lyra {
                     String todoDescription = parts[1].trim();
 
                     Task newTodo = new Todo(todoDescription);
-                    todoList[size] = newTodo;
-                    size++;
+                    todoList.add(newTodo);
 
                     String addedTodoString =
                             """
@@ -157,7 +156,7 @@ public class Lyra {
                                 %s
                               Now you have %d tasks in the list.
                             ____________________________________________________________
-                            """.formatted(newTodo.toString(), size);
+                            """.formatted(newTodo.toString(), todoList.size());
 
                     System.out.println(addedTodoString);
                 } catch (LyraException e) {
@@ -190,8 +189,7 @@ public class Lyra {
                     String to = fromAndTo[1];
 
                     Task newEvent = new Event(eventDescription, from, to);
-                    todoList[size] = newEvent;
-                    size++;
+                    todoList.add(newEvent);
 
                     String addedEventString =
                             """
@@ -200,7 +198,7 @@ public class Lyra {
                                 %s
                               Now you have %d tasks in the list.
                             ____________________________________________________________
-                            """.formatted(newEvent.toString(), size);
+                            """.formatted(newEvent.toString(), todoList.size());
 
                     System.out.println(addedEventString);
                 } catch (LyraException e) {
@@ -230,8 +228,7 @@ public class Lyra {
                     String by = descAndBy[1];
 
                     Task newDeadline = new Deadline(deadlineDescription, by);
-                    todoList[size] = newDeadline;
-                    size++;
+                    todoList.add(newDeadline);
 
                     String addedDeadlineString =
                             """
@@ -240,7 +237,7 @@ public class Lyra {
                                 %s
                               Now you have %d tasks in the list.
                             ____________________________________________________________
-                            """.formatted(newDeadline.toString(), size);
+                            """.formatted(newDeadline.toString(), todoList.size());
 
                     System.out.println(addedDeadlineString);
                 } catch (LyraException e) {
@@ -255,15 +252,14 @@ public class Lyra {
 
             default:
                 Task newTask = new Task(inputString);
-                todoList[size] = newTask;
-                size++;
+                todoList.add(newTask);
 
                 String addedString =
                         """
                         ____________________________________________________________
                           added: %s
                         ____________________________________________________________
-                        """.formatted(newTask.getDescription());
+                                                """.formatted(newTask.getDescription());
 
                 System.out.println(addedString);
                 break;
