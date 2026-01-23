@@ -4,7 +4,7 @@ public class Lyra {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Task[] todoList = new Task[100];
-        int index = 0;
+        int size = 0;
 
         String welcomeString =
                 """
@@ -27,72 +27,150 @@ public class Lyra {
             String inputString = scanner.nextLine();
             if (inputString == null) break;
 
-            // Bye Command
-            if (inputString.equalsIgnoreCase("bye")) {
+            String command = inputString.split(" ")[0].toLowerCase();
+
+            switch (command) {
+
+            case "bye":
                 System.out.println(exitString);
-                break;
+                return;
 
-            // Display list command
-            } else if (inputString.equalsIgnoreCase("list")) {
-                String listString = "____________________________________________________________\n";
-
-                for (int i = 0; i < index; i++) {
+            case "list":
+                String listString = 
+                        """
+                        ____________________________________________________________
+                          Here are the tasks in your list:
+                        """;
+                                
+                for (int i = 0; i < size; i++) {
                     Task task = todoList[i];
-                    listString += ("  [%s] " + (i + 1) + ". " + task.getDescription() + "\n")
-                        .formatted(task.getStatusIcon());
+                    listString += ("  " + (i + 1) + "." + task.toString() + "\n");
                 }
 
                 listString += "____________________________________________________________";
                 System.out.println(listString);
+                break;
 
-            // Mark task command
-            } else if (inputString.startsWith("mark")) {
+            case "mark":
                 String taskNum = inputString.split(" ")[1];
                 int idx = Integer.parseInt(taskNum);
                 Task task = todoList[idx - 1];
                 task.markDone();
 
-                String markString =                 
+                String markString =
                         """
                         ____________________________________________________________
-                        Great! I've marked this task as done:
+                          Great! I've marked this task as done:
                           [%s] %s
                         ____________________________________________________________
                         """.formatted(task.getStatusIcon(), task.getDescription());
 
                 System.out.println(markString);
+                break;
 
-            // Unmark task command
-            } else if (inputString.startsWith("unmark")) {
-                String taskNum = inputString.split(" ")[1];
-                int idx = Integer.parseInt(taskNum);
-                Task task = todoList[idx - 1];
-                task.unmarkDone();
+            case "unmark":
+                String taskNum2 = inputString.split(" ")[1];
+                int idx2 = Integer.parseInt(taskNum2);
+                Task task2 = todoList[idx2 - 1];
+                task2.unmarkDone();
 
-                String unmarkString =                 
+                String unmarkString =
                         """
                         ____________________________________________________________
-                        OK, I've marked this task as not done yet:
+                          OK, I've marked this task as not done yet:
                           [%s] %s
                         ____________________________________________________________
-                        """.formatted(task.getStatusIcon(), task.getDescription());
-                        
-                System.out.println(unmarkString);
+                        """.formatted(task2.getStatusIcon(), task2.getDescription());
 
-            // Add task command
-            } else {
-                Task task = new Task(inputString);
-                todoList[index] = task;
-                index++;
+                System.out.println(unmarkString);
+                break;
+
+            case "todo":
+                String todoDescription = inputString.split(" ", 2)[1].trim();
+                Task newTodo = new Todo(todoDescription);
+                todoList[size] = newTodo;
+                size++;
+
+                String addedTodoString =
+                        """
+                        ____________________________________________________________
+                          Got it. I've added this task: 
+                            %s
+                          Now you have %d tasks in the list.
+                        ____________________________________________________________
+                        """.formatted(newTodo.toString(), size);
+
+                System.out.println(addedTodoString);
+                break;
+
+            case "event":
+                String[] parts = inputString.split(" ", 2);
+                String rest = parts[1];
+
+                String[] descAndFrom = rest.split(" /from ", 2);
+                String eventDescription = descAndFrom[0];
+
+                String[] fromAndTo = descAndFrom[1].split(" /to ", 2);
+                String from = fromAndTo[0];
+                String to = fromAndTo[1];
+
+                Task newEvent = new Event(eventDescription, from, to);
+                todoList[size] = newEvent;
+                size++;
+
+                String addedEventString =
+                        """
+                        ____________________________________________________________
+                          Got it. I've added this task:
+                            %s
+                          Now you have %d tasks in the list.
+                        ____________________________________________________________
+                        """.formatted(newEvent.toString(), size);
+
+                System.out.println(addedEventString);
+                break;
+
+            case "deadline":
+                String[] parts2 = inputString.split(" ", 2);
+                String rest2 = parts2[1];
+
+                String[] descAndBy = rest2.split(" /by ", 2);
+                String deadlineDescription = descAndBy[0];
+                String by = descAndBy[1];
+
+                Task newDeadline = new Deadline(deadlineDescription, by);
+                todoList[size] = newDeadline;
+                size++;
+
+                String addedDeadlineString =
+                        """
+                        ____________________________________________________________
+                          Got it. I've added this task:
+                            %s
+                          Now you have %d tasks in the list.
+                        ____________________________________________________________
+                        """.formatted(newDeadline.toString(), size);
+
+                System.out.println(addedDeadlineString);
+                break;
+
+            default:
+                Task newTask = new Task(inputString);
+                todoList[size] = newTask;
+                size++;
+
                 String addedString =
                         """
                         ____________________________________________________________
                           added: %s
                         ____________________________________________________________
-                        """.formatted(task.getDescription());
+                        """.formatted(newTask.getDescription());
+
                 System.out.println(addedString);
+                break;
             }
         }
+
 
         scanner.close();
 

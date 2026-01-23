@@ -26,4 +26,9 @@ public class Task {
     public boolean getIsDone() {
         return this.isDone;
     }
+
+    @Override
+    public String toString() {
+        return ("[%s] %s".formatted(this.getStatusIcon(), this.description));
+    }
 }
