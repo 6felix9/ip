@@ -8,4 +8,6 @@ todo
 deadline read book
 mark abc
 event team sync /from today
+delete 2
+delete 10
 bye
