@@ -3,6 +3,8 @@ import java.util.Scanner;
 public class Lyra {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        String[] todoList = new String[100];
+        int index = 0;
 
         String welcomeString =
                 """
@@ -22,21 +24,34 @@ public class Lyra {
         System.out.println(welcomeString);
 
         while (true) {
-            String echo = scanner.nextLine();
-            if (echo == null) break;
+            String inputString = scanner.nextLine();
+            if (inputString == null) break;
 
-            if (echo.equalsIgnoreCase("bye")) {
+            if (inputString.equalsIgnoreCase("bye")) {
                 System.out.println(exitString);
                 break;
+
+            } else if (inputString.equalsIgnoreCase("list")) {
+                String listString = "____________________________________________________________\n";
+
+                for (int i = 0; i < index; i++) {
+                    listString += "  " + (i + 1) + ". " + todoList[i] + "\n";
+                }
+
+                listString += "____________________________________________________________";
+                System.out.println(listString);
+
             } else {
-                String echoString =
+                String addedString =
                         """
                         ____________________________________________________________
-                          %s
+                          added: %s
                         ____________________________________________________________
-                        """.formatted(echo);
+                        """.formatted(inputString);
 
-                System.out.println(echoString);
+                todoList[index] = inputString;
+                index++;
+                System.out.println(addedString);
             }
         }
 
