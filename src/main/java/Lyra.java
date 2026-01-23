@@ -250,6 +250,45 @@ public class Lyra {
                 }
                 break;
 
+            case "delete":
+                try {
+                    String[] parts = inputString.split(" ", 2);
+                    if (parts.length < 2 || parts[1].isBlank()) {
+                        throw new LyraException("Please specify a task number to delete.");
+                    }
+
+                    String taskNum = parts[1].trim();
+                    if (!taskNum.matches("\\d+")) {
+                        throw new LyraException("Please specify a valid task number to delete.");
+                    }
+
+                    int idx = Integer.parseInt(taskNum);
+                    if (idx <= 0 || idx > todoList.size()) {
+                        throw new LyraException("Task number out of range.");
+                    }
+
+                    Task removedTask = todoList.remove(idx - 1);
+
+                    String deleteString =
+                            """
+                            ____________________________________________________________
+                              Okay. I've removed this task:
+                                %s
+                              Now you have %d tasks in the list.
+                            ____________________________________________________________
+                            """.formatted(removedTask.toString(), todoList.size());
+
+                    System.out.println(deleteString);
+                } catch (LyraException e) {
+                    System.out.println(
+                            """
+                            ____________________________________________________________
+                             Oh No!!! %s
+                            ____________________________________________________________
+                            """.formatted(e.getMessage()));
+                }
+                break;
+
             default:
                 Task newTask = new Task(inputString);
                 todoList.add(newTask);
