@@ -3,10 +3,28 @@ import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class Lyra {
     private static final String SEPARATOR = "____________________________________________________________";
     private static ArrayList<Task> todoList = new ArrayList<>(100);
+    private static DateTimeFormatter outputFormatter =
+        DateTimeFormatter.ofPattern("MMM d yyyy, h:mma");
+
+    /**
+     * Parse the date string into a Date object.
+     */
+    private static LocalDateTime parseDateTime(String input) throws LyraException {
+        try {
+            DateTimeFormatter formatter =
+                    DateTimeFormatter.ofPattern("d/MM/yyyy HHmm");
+            return LocalDateTime.parse(input, formatter);
+        } catch (DateTimeParseException e) {
+            throw new LyraException("Invalid format. Use: d/MM/yyyy HHmm (e.g., 2/12/2024 1800)");
+        }
+    }
 
     /**
      * Write tasks to the data file.
@@ -57,13 +75,13 @@ public class Lyra {
                         }
                         break;
                     case "D":
-                        todoList.add(new Deadline(parts[2], parts[3]));
+                        todoList.add(new Deadline(parts[2], parseDateTime(parts[3])));
                         if (parts[1].equals("1")) {
                             todoList.get(todoList.size() - 1).markDone();
                         }
                         break;
                     case "E":
-                        todoList.add(new Event(parts[2], parts[3], parts[4]));
+                        todoList.add(new Event(parts[2], parseDateTime(parts[3]), parseDateTime(parts[4])));
                         if (parts[1].equals("1")) {
                             todoList.get(todoList.size() - 1).markDone();
                         }
@@ -112,7 +130,7 @@ public class Lyra {
                 String listString = "  Here are the tasks in your list:\n";
                 for (int i = 0; i < todoList.size(); i++) {
                     Task task = todoList.get(i);
-                    listString += ("  " + (i + 1) + "." + task.toString() + "\n");
+                    listString += ("  " + (i + 1) + ". " + task.toString() + "\n");
                 }
                 prettyPrint(listString);
                 break;
@@ -230,7 +248,10 @@ public class Lyra {
                     String from = fromAndTo[0];
                     String to = fromAndTo[1];
 
-                    Task newEvent = new Event(eventDescription, from, to);
+                    LocalDateTime fromDateTime = parseDateTime(from);
+                    LocalDateTime toDateTime = parseDateTime(to);
+
+                    Task newEvent = new Event(eventDescription, fromDateTime, toDateTime);
                     todoList.add(newEvent);
 
                     writeTasks();
@@ -261,7 +282,9 @@ public class Lyra {
                     String deadlineDescription = descAndBy[0];
                     String by = descAndBy[1];
 
-                    Task newDeadline = new Deadline(deadlineDescription, by);
+                    LocalDateTime byLocalDateTime = parseDateTime(by);
+
+                    Task newDeadline = new Deadline(deadlineDescription, byLocalDateTime);
                     todoList.add(newDeadline);
 
                     writeTasks();
