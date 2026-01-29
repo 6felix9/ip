@@ -39,6 +39,10 @@ public class Task {
         return this.type;
     }
 
+    public String toFileString() {
+        return this.type.getSymbol() + " | " + (this.isDone ? "1" : "0") + " | " + this.description;
+    }
+
     @Override
     public String toString() {
         return ("[%s] %s".formatted(this.getStatusIcon(), this.description));

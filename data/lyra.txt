@@ -1,0 +1,6 @@
+D | 0 | have dinner with Jack | June 6th
+E | 0 | project meeting | Aug 6th | 2pm
+T | 0 | join sports club
+T | 1 | fetch sister from school
+T | 0 | go to school
+D | 0 | exam | monday
