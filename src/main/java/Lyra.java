@@ -2,9 +2,28 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 
 public class Lyra {
     private static final String SEPARATOR = "____________________________________________________________";
+    private static ArrayList<Task> todoList = new ArrayList<>(100);
+
+    /**
+     * Write tasks to the data file.
+     */
+    private static void writeTasks() throws LyraException {
+        try {
+            File dataFile = new File("data/lyra.txt");
+            PrintWriter fileWriter = new PrintWriter(dataFile);
+
+            for (Task task : todoList) {
+                fileWriter.println(task.toFileString());
+            }
+            fileWriter.close();
+        } catch (FileNotFoundException e) {
+            throw new LyraException("Unable to write to data file.");
+        }
+    }
 
     /**
      * Prints the given content with the standard separator line above and below.
@@ -18,14 +37,64 @@ public class Lyra {
         System.out.println(SEPARATOR);
     }
 
+    /**
+     * Loads tasks from the data file.
+     */
+    private static void loadTasks() throws LyraException {
+        try {
+            File dataFile = new File("data/lyra.txt");
+            Scanner fileScanner = new Scanner(dataFile);
+            
+            while (fileScanner.hasNextLine()) {
+                String line = fileScanner.nextLine();
+                String[] parts = line.split(" \\| ");
+                
+                switch (parts[0]) {
+                    case "T":
+                        todoList.add(new Todo(parts[2]));
+                        if (parts[1].equals("1")) {
+                            todoList.get(todoList.size() - 1).markDone();
+                        }
+                        break;
+                    case "D":
+                        todoList.add(new Deadline(parts[2], parts[3]));
+                        if (parts[1].equals("1")) {
+                            todoList.get(todoList.size() - 1).markDone();
+                        }
+                        break;
+                    case "E":
+                        todoList.add(new Event(parts[2], parts[3], parts[4]));
+                        if (parts[1].equals("1")) {
+                            todoList.get(todoList.size() - 1).markDone();
+                        }
+                        break;
+                    default:
+                        throw new LyraException("Invalid task type in file.");
+                }
+                
+            }
+
+        } catch (FileNotFoundException e) {
+            throw new LyraException("Data file not found!");
+        }
+    }
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Task> todoList = new ArrayList<>(100);
 
         prettyPrint("""
                   Hello! I'm Lyra
                   What can I do for you?
                 """);
+
+        // Load tasks from file
+        try {
+            loadTasks();
+            prettyPrint("  Tasks loaded successfully");
+        } catch (LyraException e) {
+            prettyPrint("  Oh No!!! " + e.getMessage());
+            return;
+        }
 
         while (true) {
             String inputString = scanner.nextLine();
@@ -72,6 +141,8 @@ public class Lyra {
 
                     task.markDone();
 
+                    writeTasks();
+
                     prettyPrint("""
                               Great! I've marked this task as done:
                               [%s] %s
@@ -105,6 +176,8 @@ public class Lyra {
 
                     task.unmarkDone();
 
+                    writeTasks();
+
                     prettyPrint("""
                               OK, I've marked this task as not done yet:
                               [%s] %s
@@ -125,6 +198,8 @@ public class Lyra {
 
                     Task newTodo = new Todo(todoDescription);
                     todoList.add(newTodo);
+
+                    writeTasks();
 
                     prettyPrint("""
                               Got it. I've added this task:
@@ -158,6 +233,8 @@ public class Lyra {
                     Task newEvent = new Event(eventDescription, from, to);
                     todoList.add(newEvent);
 
+                    writeTasks();
+
                     prettyPrint("""
                               Got it. I've added this task:
                                 %s
@@ -187,6 +264,8 @@ public class Lyra {
                     Task newDeadline = new Deadline(deadlineDescription, by);
                     todoList.add(newDeadline);
 
+                    writeTasks();
+
                     prettyPrint("""
                               Got it. I've added this task:
                                 %s
@@ -215,6 +294,8 @@ public class Lyra {
                     }
 
                     Task removedTask = todoList.remove(idx - 1);
+
+                    writeTasks();
 
                     prettyPrint("""
                               Okay. I've removed this task:
