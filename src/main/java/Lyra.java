@@ -1,27 +1,31 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class Lyra {
+    private static final String SEPARATOR = "____________________________________________________________";
+
+    /**
+     * Prints the given content with the standard separator line above and below.
+     */
+    private static void prettyPrint(String content) {
+        System.out.println(SEPARATOR);
+        System.out.print(content);
+        if (!content.isEmpty() && !content.endsWith("\n")) {
+            System.out.println();
+        }
+        System.out.println(SEPARATOR);
+    }
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         ArrayList<Task> todoList = new ArrayList<>(100);
 
-        String welcomeString =
-                """
-                ____________________________________________________________
+        prettyPrint("""
                   Hello! I'm Lyra
                   What can I do for you?
-                ____________________________________________________________
-                """;
-
-        String exitString =
-                """
-                ____________________________________________________________
-                  Bye. Hope to see you again soon!
-                ____________________________________________________________
-                """;
-
-        System.out.println(welcomeString);
+                """);
 
         while (true) {
             String inputString = scanner.nextLine();
@@ -32,23 +36,16 @@ public class Lyra {
             switch (command) {
 
             case "bye":
-                System.out.println(exitString);
+                prettyPrint("  Bye. Hope to see you again soon!");
                 return;
 
             case "list":
-                String listString = 
-                        """
-                        ____________________________________________________________
-                          Here are the tasks in your list:
-                        """;
-                                
+                String listString = "  Here are the tasks in your list:\n";
                 for (int i = 0; i < todoList.size(); i++) {
                     Task task = todoList.get(i);
                     listString += ("  " + (i + 1) + "." + task.toString() + "\n");
                 }
-
-                listString += "____________________________________________________________\n";
-                System.out.println(listString);
+                prettyPrint(listString);
                 break;
 
             case "mark":
@@ -75,22 +72,12 @@ public class Lyra {
 
                     task.markDone();
 
-                    String markString =
-                            """
-                            ____________________________________________________________
+                    prettyPrint("""
                               Great! I've marked this task as done:
                               [%s] %s
-                            ____________________________________________________________
-                            """.formatted(task.getStatusIcon(), task.getDescription());
-
-                    System.out.println(markString);
+                            """.formatted(task.getStatusIcon(), task.getDescription()));
                 } catch (LyraException e) {
-                    System.out.println(
-                            """
-                            ____________________________________________________________
-                             Oh No!!! %s
-                            ____________________________________________________________
-                            """.formatted(e.getMessage()));
+                    prettyPrint("  Oh No!!! " + e.getMessage());
                 }
                 break;
 
@@ -118,22 +105,12 @@ public class Lyra {
 
                     task.unmarkDone();
 
-                    String unmarkString =
-                            """
-                            ____________________________________________________________
+                    prettyPrint("""
                               OK, I've marked this task as not done yet:
                               [%s] %s
-                            ____________________________________________________________
-                            """.formatted(task.getStatusIcon(), task.getDescription());
-
-                    System.out.println(unmarkString);
+                            """.formatted(task.getStatusIcon(), task.getDescription()));
                 } catch (LyraException e) {
-                    System.out.println(
-                            """
-                            ____________________________________________________________
-                             Oh No!!! %s
-                            ____________________________________________________________
-                            """.formatted(e.getMessage()));
+                    prettyPrint("  Oh No!!! " + e.getMessage());
                 }
                 break;
 
@@ -149,23 +126,13 @@ public class Lyra {
                     Task newTodo = new Todo(todoDescription);
                     todoList.add(newTodo);
 
-                    String addedTodoString =
-                            """
-                            ____________________________________________________________
-                              Got it. I've added this task: 
+                    prettyPrint("""
+                              Got it. I've added this task:
                                 %s
                               Now you have %d tasks in the list.
-                            ____________________________________________________________
-                            """.formatted(newTodo.toString(), todoList.size());
-
-                    System.out.println(addedTodoString);
+                            """.formatted(newTodo.toString(), todoList.size()));
                 } catch (LyraException e) {
-                    System.out.println(
-                            """
-                            ____________________________________________________________
-                             Oh No!!! %s
-                            ____________________________________________________________
-                            """.formatted(e.getMessage()));
+                    prettyPrint("  Oh No!!! " + e.getMessage());
                 }
                 break;
 
@@ -191,23 +158,13 @@ public class Lyra {
                     Task newEvent = new Event(eventDescription, from, to);
                     todoList.add(newEvent);
 
-                    String addedEventString =
-                            """
-                            ____________________________________________________________
+                    prettyPrint("""
                               Got it. I've added this task:
                                 %s
                               Now you have %d tasks in the list.
-                            ____________________________________________________________
-                            """.formatted(newEvent.toString(), todoList.size());
-
-                    System.out.println(addedEventString);
+                            """.formatted(newEvent.toString(), todoList.size()));
                 } catch (LyraException e) {
-                    System.out.println(
-                            """
-                            ____________________________________________________________
-                             Oh No!!! %s
-                            ____________________________________________________________
-                            """.formatted(e.getMessage()));
+                    prettyPrint("  Oh No!!! " + e.getMessage());
                 }
                 break;
 
@@ -230,23 +187,13 @@ public class Lyra {
                     Task newDeadline = new Deadline(deadlineDescription, by);
                     todoList.add(newDeadline);
 
-                    String addedDeadlineString =
-                            """
-                            ____________________________________________________________
+                    prettyPrint("""
                               Got it. I've added this task:
                                 %s
                               Now you have %d tasks in the list.
-                            ____________________________________________________________
-                            """.formatted(newDeadline.toString(), todoList.size());
-
-                    System.out.println(addedDeadlineString);
+                            """.formatted(newDeadline.toString(), todoList.size()));
                 } catch (LyraException e) {
-                    System.out.println(
-                            """
-                            ____________________________________________________________
-                             Oh No!!! %s
-                            ____________________________________________________________
-                            """.formatted(e.getMessage()));
+                    prettyPrint("  Oh No!!! " + e.getMessage());
                 }
                 break;
 
@@ -269,23 +216,13 @@ public class Lyra {
 
                     Task removedTask = todoList.remove(idx - 1);
 
-                    String deleteString =
-                            """
-                            ____________________________________________________________
+                    prettyPrint("""
                               Okay. I've removed this task:
                                 %s
                               Now you have %d tasks in the list.
-                            ____________________________________________________________
-                            """.formatted(removedTask.toString(), todoList.size());
-
-                    System.out.println(deleteString);
+                            """.formatted(removedTask.toString(), todoList.size()));
                 } catch (LyraException e) {
-                    System.out.println(
-                            """
-                            ____________________________________________________________
-                             Oh No!!! %s
-                            ____________________________________________________________
-                            """.formatted(e.getMessage()));
+                    prettyPrint("  Oh No!!! " + e.getMessage());
                 }
                 break;
 
@@ -309,11 +246,7 @@ public class Lyra {
                         throw new LyraException("Invalid task type. Use: todo, deadline, or event.");
                     }
 
-                    String findString = 
-                            """
-                            ____________________________________________________________
-                              Here are your %s tasks:
-                            """.formatted(typeStr);
+                    String findString = "  Here are your " + typeStr + " tasks:\n";
 
                     boolean found = false;
                     int displayIndex = 1;
@@ -330,30 +263,18 @@ public class Lyra {
                         throw new LyraException("No " + typeStr + " tasks found.");
                     }
 
-                    findString += "____________________________________________________________\n";
-                    System.out.println(findString);
+                    prettyPrint(findString);
                 } catch (LyraException e) {
-                    System.out.println(
-                            """
-                            ____________________________________________________________
-                             Oh No!!! %s
-                            ____________________________________________________________
-                            """.formatted(e.getMessage()));
+                    prettyPrint("  Oh No!!! " + e.getMessage());
                 }
                 break;
 
             default:
-                Task newTask = new Task(inputString);
-                todoList.add(newTask);
-
-                String addedString =
-                        """
-                        ____________________________________________________________
-                          added: %s
-                        ____________________________________________________________
-                                                """.formatted(newTask.getDescription());
-
-                System.out.println(addedString);
+                try {
+                    throw new LyraException("I'm sorry, but I don't know what that means :-(");
+                } catch (LyraException e) {
+                    prettyPrint("  Oh No!!! " + e.getMessage());
+                }
                 break;
             }
         }
