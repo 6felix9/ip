@@ -12,6 +12,10 @@ then
     rm ACTUAL.TXT
 fi
 
+# create data directory and empty data file so load/save work (assume no initial data)
+mkdir -p data
+: > data/lyra.txt
+
 # compile the code into the bin folder, terminates if error occurred
 if ! javac -cp ../src/main/java -Xlint:none -d ../bin ../src/main/java/*.java
 then

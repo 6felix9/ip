@@ -1,3 +1,0 @@
-D | 0 | driving test | 2/12/2019 1800
-D | 0 | eat coffeeshop | 12/12/1222 0600
-D | 0 | go to work | 12/12/2026 0900
