@@ -1,9 +1,14 @@
 package lyra;
 
 public class Task {
-    protected String description;
-    protected boolean isDone;
-    protected TaskType type;
+    private static final String DONE_MARKER = "1";
+    private static final String NOT_DONE_MARKER = "0";
+    private static final String DONE_ICON = "X";
+    private static final String NOT_DONE_ICON = " ";
+
+    private String description;
+    private boolean isDone;
+    private TaskType type;
 
     public Task(String description) {
         this.description = description;
@@ -18,7 +23,7 @@ public class Task {
     }
 
     public String getStatusIcon() {
-        return (isDone ? "X" : " "); // mark done task with X
+        return (isDone ? DONE_ICON : NOT_DONE_ICON);
     }
 
     public String getDescription() {
@@ -42,7 +47,7 @@ public class Task {
     }
 
     public String toFileString() {
-        return this.type.getSymbol() + " | " + (this.isDone ? "1" : "0") + " | " + this.description;
+        return this.type.getSymbol() + " | " + (this.isDone ? DONE_MARKER : NOT_DONE_MARKER) + " | " + this.description;
     }
 
     @Override

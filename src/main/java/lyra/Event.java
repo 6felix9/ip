@@ -4,8 +4,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Event extends Task {
-    protected LocalDateTime from;
-    protected LocalDateTime to;
+    private static final String DONE_MARKER = "1";
+    private static final String NOT_DONE_MARKER = "0";
+
+    private LocalDateTime from;
+    private LocalDateTime to;
 
     public Event(String description, LocalDateTime from, LocalDateTime to) {
         super(description, TaskType.EVENT);
@@ -23,7 +26,7 @@ public class Event extends Task {
 
     @Override
     public String toFileString() {
-        return "E | " + (isDone ? "1" : "0") + " | " + description + " | " +
+        return "E | " + (getIsDone() ? DONE_MARKER : NOT_DONE_MARKER) + " | " + getDescription() + " | " +
                 from.format(DateTimeFormatter.ofPattern("d/MM/yyyy HHmm")) + " | " +
                 to.format(DateTimeFormatter.ofPattern("d/MM/yyyy HHmm"));
     }

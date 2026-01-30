@@ -10,6 +10,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class Storage {
+    private static final String DONE_MARKER = "1";
+
     private File dataFile;
 
     /**
@@ -43,19 +45,19 @@ public class Storage {
                 switch (parts[0]) {
                     case "T":
                         tasks.add(new Todo(parts[2]));
-                        if (parts[1].equals("1")) {
+                        if (parts[1].equals(DONE_MARKER)) {
                             tasks.get(tasks.size() - 1).markDone();
                         }
                         break;
                     case "D":
                         tasks.add(new Deadline(parts[2], parseDateTime(parts[3])));
-                        if (parts[1].equals("1")) {
+                        if (parts[1].equals(DONE_MARKER)) {
                             tasks.get(tasks.size() - 1).markDone();
                         }
                         break;
                     case "E":
                         tasks.add(new Event(parts[2], parseDateTime(parts[3]), parseDateTime(parts[4])));
-                        if (parts[1].equals("1")) {
+                        if (parts[1].equals(DONE_MARKER)) {
                             tasks.get(tasks.size() - 1).markDone();
                         }
                         break;
