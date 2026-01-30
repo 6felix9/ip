@@ -8,383 +8,114 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class Lyra {
-    private static final String SEPARATOR = "____________________________________________________________";
-    private static ArrayList<Task> todoList = new ArrayList<>(100);
-    private static DateTimeFormatter outputFormatter =
-        DateTimeFormatter.ofPattern("MMM d yyyy, h:mma");
+    private Ui ui;
+    private Storage storage;
+    private TaskList taskList;
+    private Parser parser;
 
     /**
-     * Parse the date string into a Date object.
+     * Constructor for Lyra.
      */
-    private static LocalDateTime parseDateTime(String input) throws LyraException {
+    public Lyra(String filePath) {
+        this.ui = new Ui();
+        this.storage = new Storage(filePath);
+        this.parser = new Parser();
         try {
-            DateTimeFormatter formatter =
-                    DateTimeFormatter.ofPattern("d/MM/yyyy HHmm");
-            return LocalDateTime.parse(input, formatter);
-        } catch (DateTimeParseException e) {
-            throw new LyraException("Invalid format. Use: d/MM/yyyy HHmm (e.g., 2/12/2024 1800)");
-        }
-    }
-
-    /**
-     * Write tasks to the data file.
-     */
-    private static void writeTasks() throws LyraException {
-        try {
-            File dataFile = new File("data/lyra.txt");
-            PrintWriter fileWriter = new PrintWriter(dataFile);
-
-            for (Task task : todoList) {
-                fileWriter.println(task.toFileString());
-            }
-            fileWriter.close();
-        } catch (FileNotFoundException e) {
-            throw new LyraException("Unable to write to data file.");
-        }
-    }
-
-    /**
-     * Prints the given content with the standard separator line above and below.
-     */
-    private static void prettyPrint(String content) {
-        System.out.println(SEPARATOR);
-        System.out.print(content);
-        if (!content.isEmpty() && !content.endsWith("\n")) {
-            System.out.println();
-        }
-        System.out.println(SEPARATOR);
-    }
-
-    /**
-     * Loads tasks from the data file.
-     */
-    private static void loadTasks() throws LyraException {
-        try {
-            File dataFile = new File("data/lyra.txt");
-            Scanner fileScanner = new Scanner(dataFile);
-            
-            while (fileScanner.hasNextLine()) {
-                String line = fileScanner.nextLine();
-                String[] parts = line.split(" \\| ");
-                
-                switch (parts[0]) {
-                    case "T":
-                        todoList.add(new Todo(parts[2]));
-                        if (parts[1].equals("1")) {
-                            todoList.get(todoList.size() - 1).markDone();
-                        }
-                        break;
-                    case "D":
-                        todoList.add(new Deadline(parts[2], parseDateTime(parts[3])));
-                        if (parts[1].equals("1")) {
-                            todoList.get(todoList.size() - 1).markDone();
-                        }
-                        break;
-                    case "E":
-                        todoList.add(new Event(parts[2], parseDateTime(parts[3]), parseDateTime(parts[4])));
-                        if (parts[1].equals("1")) {
-                            todoList.get(todoList.size() - 1).markDone();
-                        }
-                        break;
-                    default:
-                        throw new LyraException("Invalid task type in file.");
-                }
-                
-            }
-
-        } catch (FileNotFoundException e) {
-            throw new LyraException("Data file not found!");
-        }
-    }
-
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-
-        prettyPrint("""
-                  Hello! I'm Lyra
-                  What can I do for you?
-                """);
-
-        // Load tasks from file
-        try {
-            loadTasks();
-            prettyPrint("  Tasks loaded successfully");
+            this.taskList = new TaskList(storage.loadTasks());
         } catch (LyraException e) {
-            prettyPrint("  Oh No!!! " + e.getMessage());
-            return;
+            this.ui.showError(e.getMessage());
+            this.taskList = new TaskList();
         }
+    }
 
-        while (true) {
-            String inputString = scanner.nextLine();
-            if (inputString == null) break;
+    /**
+     * Runs the Lyra application.
+     */
+    public void run() {
+        ui.showWelcome();
+        boolean isExit = false;
 
-            String command = inputString.split(" ")[0].toLowerCase();
-
-            switch (command) {
-
-            case "bye":
-                prettyPrint("  Bye. Hope to see you again soon!");
-                return;
-
-            case "list":
-                String listString = "  Here are the tasks in your list:\n";
-                for (int i = 0; i < todoList.size(); i++) {
-                    Task task = todoList.get(i);
-                    listString += ("  " + (i + 1) + ". " + task.toString() + "\n");
+        while (!isExit) {
+            try {
+                String fullCommand = ui.readCommand();
+                
+                if (fullCommand.isEmpty()) {
+                    continue;
                 }
-                prettyPrint(listString);
-                break;
 
-            case "mark":
-                try {
-                    String[] parts = inputString.split(" ", 2);
-                    if (parts.length < 2 || parts[1].isBlank()) {
-                        throw new LyraException("Please specify a task number.");
+                Command commandType = parser.getCommand(fullCommand);
+
+                switch (commandType) {
+                    case BYE:
+                        ui.showGoodbye();
+                        isExit = true;
+                        break;
+
+                    case MARK:
+                        int markIndex = parser.parseIndex(fullCommand);
+                        Task markedTask = taskList.markTask(markIndex);
+                        ui.showMarked(markedTask);
+                        storage.saveTasks(taskList.getTasks());
+                        break;
+
+                    case UNMARK:
+                        int unmarkIndex = parser.parseIndex(fullCommand);
+                        Task unmarkedTask = taskList.unmarkTask(unmarkIndex);
+                        ui.showUnmarked(unmarkedTask);
+                        storage.saveTasks(taskList.getTasks());
+                        break;
+
+                    case LIST:
+                        ui.showAllTasks(taskList);
+                        break;
+
+                    case TODO:
+                        Todo newTodo = parser.parseTodo(fullCommand);
+                        taskList.addTask(newTodo);
+                        ui.showAddedTodo(newTodo);
+                        storage.saveTasks(taskList.getTasks());
+                        break;
+
+                    case DEADLINE:
+                        Deadline newDeadline = parser.parseDeadline(fullCommand);
+                        taskList.addTask(newDeadline);
+                        ui.showAddedDeadline(newDeadline);
+                        storage.saveTasks(taskList.getTasks());
+                        break;
+
+                    case EVENT:
+                        Event newEvent = parser.parseEvent(fullCommand);
+                        taskList.addTask(newEvent);
+                        ui.showAddedEvent(newEvent);
+                        storage.saveTasks(taskList.getTasks());
+                        break;
+
+                    case DELETE:
+                        int deleteIndex = parser.parseIndex(fullCommand);
+                        Task removedTask = taskList.removeTask(deleteIndex);
+                        ui.showRemovedTask(removedTask);
+                        storage.saveTasks(taskList.getTasks());
+                        break;
+
+                    case FIND:
+                        TaskType typeToFind = parser.parseTaskType(fullCommand);
+                        ArrayList<Task> foundTasks = taskList.findTasks(typeToFind);
+                        ui.showFoundTasks(foundTasks);
+                        break;
+
+                    default:
+                        throw new LyraException("I'm sorry, but I don't know what that means :-(");
                     }
-
-                    String taskNum = parts[1].trim();
-                    if (!taskNum.matches("\\d+")) {
-                        throw new LyraException("Please specify a task number.");
-                    }
-
-                    int idx = Integer.parseInt(taskNum);
-                    if (idx <= 0 || idx > todoList.size()) {
-                        throw new LyraException("Task number out of range.");
-                    }
-
-                    Task task = todoList.get(idx - 1);
-                    if (task == null) {
-                        throw new LyraException("Task number out of range.");
-                    }
-
-                    task.markDone();
-
-                    writeTasks();
-
-                    prettyPrint("""
-                              Great! I've marked this task as done:
-                              [%s] %s
-                            """.formatted(task.getStatusIcon(), task.getDescription()));
-                } catch (LyraException e) {
-                    prettyPrint("  Oh No!!! " + e.getMessage());
-                }
-                break;
-
-            case "unmark":
-                try {
-                    String[] parts = inputString.split(" ", 2);
-                    if (parts.length < 2 || parts[1].isBlank()) {
-                        throw new LyraException("Please specify a task number.");
-                    }
-
-                    String taskNum = parts[1].trim();
-                    if (!taskNum.matches("\\d+")) {
-                        throw new LyraException("Please specify a task number.");
-                    }
-
-                    int idx = Integer.parseInt(taskNum);
-                    if (idx <= 0 || idx > todoList.size()) {
-                        throw new LyraException("Task number out of range.");
-                    }
-
-                    Task task = todoList.get(idx - 1);
-                    if (task == null) {
-                        throw new LyraException("Task number out of range.");
-                    }
-
-                    task.unmarkDone();
-
-                    writeTasks();
-
-                    prettyPrint("""
-                              OK, I've marked this task as not done yet:
-                              [%s] %s
-                            """.formatted(task.getStatusIcon(), task.getDescription()));
-                } catch (LyraException e) {
-                    prettyPrint("  Oh No!!! " + e.getMessage());
-                }
-                break;
-
-            case "todo":
-                try {
-                    String[] parts = inputString.split(" ", 2);
-                    if (parts.length < 2 || parts[1].trim().isEmpty()) {
-                        throw new LyraException("The description of a todo cannot be empty.");
-                    }
-
-                    String todoDescription = parts[1].trim();
-
-                    Task newTodo = new Todo(todoDescription);
-                    todoList.add(newTodo);
-
-                    writeTasks();
-
-                    prettyPrint("""
-                              Got it. I've added this task:
-                                %s
-                              Now you have %d tasks in the list.
-                            """.formatted(newTodo.toString(), todoList.size()));
-                } catch (LyraException e) {
-                    prettyPrint("  Oh No!!! " + e.getMessage());
-                }
-                break;
-
-            case "event":
-                try {
-                    String[] parts = inputString.split(" ", 2);
-                    if (parts.length < 2) {
-                        throw new LyraException("Please specify event time using /from and /to.");
-                    }
-
-                    String rest = parts[1];
-                    if (!rest.contains(" /from ") || !rest.contains(" /to ")) {
-                        throw new LyraException("Please specify event time using /from and /to.");
-                    }
-
-                    String[] descAndFrom = rest.split(" /from ", 2);
-                    String eventDescription = descAndFrom[0];
-
-                    String[] fromAndTo = descAndFrom[1].split(" /to ", 2);
-                    String from = fromAndTo[0];
-                    String to = fromAndTo[1];
-
-                    LocalDateTime fromDateTime = parseDateTime(from);
-                    LocalDateTime toDateTime = parseDateTime(to);
-
-                    Task newEvent = new Event(eventDescription, fromDateTime, toDateTime);
-                    todoList.add(newEvent);
-
-                    writeTasks();
-
-                    prettyPrint("""
-                              Got it. I've added this task:
-                                %s
-                              Now you have %d tasks in the list.
-                            """.formatted(newEvent.toString(), todoList.size()));
-                } catch (LyraException e) {
-                    prettyPrint("  Oh No!!! " + e.getMessage());
-                }
-                break;
-
-            case "deadline":
-                try {
-                    String[] parts = inputString.split(" ", 2);
-                    if (parts.length < 2) {
-                        throw new LyraException("Please specify a deadline using /by.");
-                    }
-
-                    String rest = parts[1];
-                    if (!rest.contains(" /by ")) {
-                        throw new LyraException("Please specify a deadline using /by.");
-                    }
-
-                    String[] descAndBy = rest.split(" /by ", 2);
-                    String deadlineDescription = descAndBy[0];
-                    String by = descAndBy[1];
-
-                    LocalDateTime byLocalDateTime = parseDateTime(by);
-
-                    Task newDeadline = new Deadline(deadlineDescription, byLocalDateTime);
-                    todoList.add(newDeadline);
-
-                    writeTasks();
-
-                    prettyPrint("""
-                              Got it. I've added this task:
-                                %s
-                              Now you have %d tasks in the list.
-                            """.formatted(newDeadline.toString(), todoList.size()));
-                } catch (LyraException e) {
-                    prettyPrint("  Oh No!!! " + e.getMessage());
-                }
-                break;
-
-            case "delete":
-                try {
-                    String[] parts = inputString.split(" ", 2);
-                    if (parts.length < 2 || parts[1].isBlank()) {
-                        throw new LyraException("Please specify a task number to delete.");
-                    }
-
-                    String taskNum = parts[1].trim();
-                    if (!taskNum.matches("\\d+")) {
-                        throw new LyraException("Please specify a valid task number to delete.");
-                    }
-
-                    int idx = Integer.parseInt(taskNum);
-                    if (idx <= 0 || idx > todoList.size()) {
-                        throw new LyraException("Task number out of range.");
-                    }
-
-                    Task removedTask = todoList.remove(idx - 1);
-
-                    writeTasks();
-
-                    prettyPrint("""
-                              Okay. I've removed this task:
-                                %s
-                              Now you have %d tasks in the list.
-                            """.formatted(removedTask.toString(), todoList.size()));
-                } catch (LyraException e) {
-                    prettyPrint("  Oh No!!! " + e.getMessage());
-                }
-                break;
-
-            case "find":
-                try {
-                    String[] parts = inputString.split(" ", 2);
-                    if (parts.length < 2 || parts[1].isBlank()) {
-                        throw new LyraException("Please specify a task type (todo, deadline, or event).");
-                    }
-
-                    String typeStr = parts[1].trim().toLowerCase();
-                    TaskType filterType;
-
-                    if (typeStr.equals("todo")) {
-                        filterType = TaskType.TODO;
-                    } else if (typeStr.equals("deadline")) {
-                        filterType = TaskType.DEADLINE;
-                    } else if (typeStr.equals("event")) {
-                        filterType = TaskType.EVENT;
-                    } else {
-                        throw new LyraException("Invalid task type. Use: todo, deadline, or event.");
-                    }
-
-                    String findString = "  Here are your " + typeStr + " tasks:\n";
-
-                    boolean found = false;
-                    int displayIndex = 1;
-                    for (int i = 0; i < todoList.size(); i++) {
-                        Task task = todoList.get(i);
-                        if (task.getType() == filterType) {
-                            findString += ("  " + displayIndex + "." + task.toString() + "\n");
-                            displayIndex++;
-                            found = true;
-                        }
-                    }
-
-                    if (!found) {
-                        throw new LyraException("No " + typeStr + " tasks found.");
-                    }
-
-                    prettyPrint(findString);
-                } catch (LyraException e) {
-                    prettyPrint("  Oh No!!! " + e.getMessage());
-                }
-                break;
-
-            default:
-                try {
-                    throw new LyraException("I'm sorry, but I don't know what that means :-(");
-                } catch (LyraException e) {
-                    prettyPrint("  Oh No!!! " + e.getMessage());
-                }
-                break;
+            } catch (LyraException e) {
+                ui.showError(e.getMessage());
             }
         }
+    }
 
-
-        scanner.close();
-
+    /**
+     * Main method to run the Lyra application.
+     */
+    public static void main(String[] args) {
+        new Lyra("data/lyra.txt").run();
     }
 }
