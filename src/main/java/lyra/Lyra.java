@@ -2,6 +2,9 @@ package lyra;
 
 import java.util.ArrayList;
 
+/**
+ * Lyra class for Lyra.
+ */
 public class Lyra {
     private Ui ui;
     private Storage storage;

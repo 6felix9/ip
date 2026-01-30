@@ -3,20 +3,32 @@ package lyra;
 import java.util.Scanner;
 import java.util.ArrayList;
 
+/**
+ * Ui class for Lyra.
+ */
 public class Ui {
     private final String SEPARATOR = "____________________________________________________________";
     private final Scanner scanner;
 
+    /**
+     * Constructor for Ui.
+     */
     public Ui() {
         this.scanner = new Scanner(System.in);
     }
 
+    /**
+     * Read the command from the user.
+     */
     public String readCommand() {
         System.out.print("> ");
         String command = scanner.nextLine();
         return command;
     }
 
+    /**
+     * Show the tasks in the list.
+     */
     public void showLoadTasks(TaskList taskList) {
         prettyPrint("""
                 Here are the tasks in your list:
@@ -27,6 +39,9 @@ public class Ui {
         }
     }
 
+    /**
+     * Show all tasks in the list.
+     */
     public void showAllTasks(TaskList taskList) {
         String listString = "  Here are the tasks in your list:\n";
         for (int i = 0; i < taskList.getSize(); i++) {
@@ -36,6 +51,9 @@ public class Ui {
         prettyPrint(listString);
     }
 
+    /**
+     * Show the marked task.
+     */
     public void showMarked(Task task) {
         prettyPrint("""
                 Great! I've marked this task as done:
@@ -43,6 +61,9 @@ public class Ui {
                 """.formatted(task.getStatusIcon(), task.getDescription()));
     }
 
+    /**
+     * Show the unmarked task.
+     */
     public void showUnmarked(Task task) {
         prettyPrint("""
                 OK, I've marked this task as not done yet:
@@ -50,6 +71,9 @@ public class Ui {
                 """.formatted(task.getStatusIcon(), task.getDescription()));
     }
 
+    /**
+     * Show the added todo task.
+     */
     public void showAddedTodo(Task task) {
         prettyPrint("""
                 Got it. I've added this task:
@@ -57,6 +81,9 @@ public class Ui {
                 """.formatted(task.toString()));
     }
 
+    /**
+     * Show the added deadline task.
+     */
     public void showAddedDeadline(Task task) {
         prettyPrint("""
                 Got it. I've added this task:
@@ -64,6 +91,9 @@ public class Ui {
                 """.formatted(task.toString()));
     }
 
+    /**
+     * Show the added event task.
+     */
     public void showAddedEvent(Task task) {
         prettyPrint("""
                 Got it. I've added this task:
@@ -71,6 +101,9 @@ public class Ui {
                 """.formatted(task.toString()));
     }
 
+    /**
+     * Show the removed task.
+     */
     public void showRemovedTask(Task task) {
         prettyPrint("""
                 Okay. I've removed this task:
@@ -78,6 +111,9 @@ public class Ui {
                 """.formatted(task.toString()));
     }
 
+    /**
+     * Show the found tasks.
+     */
     public void showFoundTasks(ArrayList<Task> foundTasks) {
         if (foundTasks.isEmpty()) {
             prettyPrint("No matching tasks found.");
@@ -90,6 +126,9 @@ public class Ui {
         prettyPrint(findString);
     }
 
+    /**
+     * Show the welcome message.
+     */
     public void showWelcome() {
         prettyPrint("""
                 Hello! I'm Lyra
@@ -97,18 +136,27 @@ public class Ui {
                 """);
     }
 
+    /**
+     * Show the goodbye message.
+     */
     public void showGoodbye() {
         prettyPrint("""
                 Bye. Hope to see you again soon!
                 """);
     }
 
+    /**
+     * Show the error message.
+     */
     public void showError(String errorMessage) {
         prettyPrint(String.format("""
                 Oh No!!! %s
                 """, errorMessage));
     }
 
+    /**
+     * Pretty print the message.
+     */
     private void prettyPrint(String message) {
         System.out.println(SEPARATOR);
         System.out.print(message);

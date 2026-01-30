@@ -27,6 +27,9 @@ public class Storage {
         }
     }
 
+    /**
+     * Constructor for Storage.
+     */
     public Storage(String filePath) {
         this.dataFile = new File(filePath);
     }
