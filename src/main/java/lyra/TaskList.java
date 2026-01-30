@@ -52,10 +52,10 @@ public class TaskList {
         return this.tasks.get(index);
     }
 
-    public ArrayList<Task> findTasks(TaskType type) {
+    public ArrayList<Task> findTasks(String keyword) {
         ArrayList<Task> foundTasks = new ArrayList<>();
         for (Task task : this.tasks) {
-            if (task.getType() == type) {
+            if (task.getDescription().contains(keyword)) {
                 foundTasks.add(task);
             }
         }
