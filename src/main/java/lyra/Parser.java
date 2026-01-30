@@ -3,12 +3,13 @@ package lyra;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 
 public class Parser {
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/MM/yyyy HHmm");
 
     /**
-     * Parse the date string into a Date object.
+     * Parses a date-time string into a LocalDateTime object based on a specific pattern.
      */
     private LocalDateTime parseDateTime(String input) throws LyraException {
         try {
@@ -18,7 +19,9 @@ public class Parser {
         }
     }
 
-    // For Command: "bye", "list", "mark", "unmark", "todo", "deadline", "event", "delete", "find"
+    /**
+     * Identifies and returns the Command type from the raw user input.
+     */
     public Command getCommand(String command) throws LyraException {
         try {
             String commandWord = command.trim().split(" ")[0].toUpperCase();
@@ -28,84 +31,74 @@ public class Parser {
         }
     }
 
-    // For Todo: "todo borrow book"
+    /**
+     * Extracts the description from the input and creates a new Todo task.
+     */
     public Todo parseTodo(String command) {
-        // 1. Remove the command word ("todo ")
         String description = command.substring(command.indexOf(" ") + 1);
-        // 2. Return the Todo object
         return new Todo(description);
     }
 
-    // For Deadline: "deadline return book /by Sunday"
+    /**
+     * Parses the description and deadline time to create a new Deadline task.
+     */
     public Deadline parseDeadline(String command) throws LyraException {
-        // 1. Remove the command word ("deadline ")
         String content = command.substring(command.indexOf(" ") + 1);
-        
-        // 2. Split by the delimiter
         String[] parts = content.split(" /by ", 2);
         
         if (parts.length < 2) {
             throw new LyraException("A deadline must have a /by time!");
         }
         
-        // 3. Return the Deadline object
         return new Deadline(parts[0], parseDateTime(parts[1])); 
     }
 
-    // For Event: "event project meeting /from Mon 2pm /to 4pm"
+    /**
+     * Parses the description, start time, and end time to create a new Event task.
+     */
     public Event parseEvent(String command) throws LyraException {
-        // 1. Remove the command word ("event ")
         String content = command.substring(command.indexOf(" ") + 1);
         
-        // 2. Split by the delimiter
         String[] firstSplit = content.split(" /from ", 2);
         if (firstSplit.length < 2) {
             throw new LyraException("Event needs /from!");
         }
         
-        // 3. Split by the delimiter
         String[] secondSplit = firstSplit[1].split(" /to ", 2);
         if (secondSplit.length < 2) {
             throw new LyraException("Event needs /to!");
         }
         
-        // 4. Return the Event object
         return new Event(firstSplit[0], parseDateTime(secondSplit[0]), parseDateTime(secondSplit[1]));
     }
 
-    // For Index: "delete 1" or "mark 1" or "unmark 1"
+    /**
+     * Extracts the task index from the command and converts it to a zero-based integer.
+     */
     public int parseIndex(String command) throws LyraException {
         try {
-            // 1. Split by the delimiter
             String[] parts = command.split(" ");
             
-            // 2. Check if the user actually provided a number
             if (parts.length < 2) {
                 throw new LyraException("Please specify a task number!");
             }
             
-            // 3. Parse the string to an int
             int userIndex = Integer.parseInt(parts[1]);
-            
-            // 4. Convert 1-based (User) to 0-based (Java)
             return userIndex - 1; 
             
         } catch (NumberFormatException e) {
-            // 5. Throw an error if the user typed "delete abc"
             throw new LyraException("That's not a valid number! Please use digits (e.g., 1, 2, 3).");
         }
     }
 
-    // For Type: "find todo"
-    public TaskType parseTaskType(String input) throws LyraException {
-        try {
-            String[] parts = input.split(" ");
-            if (parts.length < 2) {
-                throw new LyraException("Please specify a task type (todo, deadline, or event).");
-            }
-            return TaskType.valueOf(parts[1].toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new LyraException("Invalid task type! Please use: todo, deadline, event.");
+    /**
+     * Extracts the keyword from the find command.
+     */
+    public String parseKeyword(String command) throws LyraException {
+        String[] parts = command.trim().split(" ", 2);
+        if (parts.length < 2 || parts[1].trim().isEmpty()) {
+            throw new LyraException("Please specify a keyword to find!");
         }
+        return parts[1].trim();
     }
 }

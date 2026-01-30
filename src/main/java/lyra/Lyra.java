@@ -93,8 +93,8 @@ public class Lyra {
                         break;
 
                     case FIND:
-                        TaskType typeToFind = parser.parseTaskType(fullCommand);
-                        ArrayList<Task> foundTasks = taskList.findTasks(typeToFind);
+                        String keyword = parser.parseKeyword(fullCommand);
+                        ArrayList<Task> foundTasks = taskList.findTasks(keyword);
                         ui.showFoundTasks(foundTasks);
                         break;
 
