@@ -21,4 +21,29 @@ public class ParserTest {
             assertEquals("I'm sorry, but I don't know what that means :-(", e.getMessage());
         }
     }
+
+    @Test
+    public void parseKeyword_validKeyword_success() throws LyraException {
+        Parser parser = new Parser();
+        assertEquals("book", parser.parseKeyword("find book"));
+        assertEquals("read book", parser.parseKeyword("find read book"));
+    }
+
+    @Test
+    public void parseKeyword_emptyKeyword_exceptionThrown() {
+        Parser parser = new Parser();
+        try {
+            parser.parseKeyword("find");
+            fail();
+        } catch (LyraException e) {
+            assertEquals("Please specify a keyword to find!", e.getMessage());
+        }
+
+        try {
+            parser.parseKeyword("find   ");
+            fail();
+        } catch (LyraException e) {
+            assertEquals("Please specify a keyword to find!", e.getMessage());
+        }
+    }
 }

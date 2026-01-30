@@ -81,14 +81,14 @@ public class TaskList {
         this.tasks.get(index).unmarkDone();
         return this.tasks.get(index);
     }
-
+    
     /**
-     * Find tasks by type.
-     */
-    public ArrayList<Task> findTasks(TaskType type) {
+     * Find tasks by keyword
+     */ 
+    public ArrayList<Task> findTasks(String keyword) {
         ArrayList<Task> foundTasks = new ArrayList<>();
         for (Task task : this.tasks) {
-            if (task.getType() == type) {
+            if (task.getDescription().contains(keyword)) {
                 foundTasks.add(task);
             }
         }

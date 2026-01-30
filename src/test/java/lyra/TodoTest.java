@@ -11,6 +11,13 @@ public class TodoTest {
     }
 
     @Test
+    public void toString_markedTodo_formattedCorrectly() {
+        Todo todo = new Todo("read book");
+        todo.markDone();
+        assertEquals("[T][X] read book", todo.toString());
+    }
+
+    @Test
     public void toFileString_markedTodo_formattedCorrectly() {
         Todo todo = new Todo("read book");
         todo.markDone();

@@ -7,7 +7,10 @@ import java.time.format.DateTimeFormatter;
  * Deadline class for Lyra.
  */
 public class Deadline extends Task {
-    protected LocalDateTime by;
+    private static final String DONE_MARKER = "1";
+    private static final String NOT_DONE_MARKER = "0";
+
+    private LocalDateTime by;
 
     /**
      * Constructor for Deadline.
@@ -29,8 +32,8 @@ public class Deadline extends Task {
      */
     @Override
     public String toFileString() {
-        return "D | " + (isDone ? "1" : "0") + " | " + description + " | " +
-                by.format(DateTimeFormatter.ofPattern("d/MM/yyyy HHmm"));
+        return "D | " + (getIsDone() ? DONE_MARKER : NOT_DONE_MARKER) + " | " + getDescription() + " | " +
+            by.format(DateTimeFormatter.ofPattern("d/MM/yyyy HHmm"));
     }
 
     /**
