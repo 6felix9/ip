@@ -1,3 +1,5 @@
+package lyra;
+
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -105,7 +107,7 @@ public class Ui {
         prettyPrint(String.format("""
                 Oh No!!! %s
                 """, errorMessage));
-        }
+    }
 
     private void prettyPrint(String message) {
         System.out.println(SEPARATOR);

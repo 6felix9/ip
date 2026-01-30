@@ -1,3 +1,5 @@
+package lyra;
+
 public enum Command {
     BYE,
     LIST,

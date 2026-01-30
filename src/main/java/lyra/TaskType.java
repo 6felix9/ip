@@ -1,3 +1,5 @@
+package lyra;
+
 public enum TaskType {
     TODO("T"),
     DEADLINE("D"),
