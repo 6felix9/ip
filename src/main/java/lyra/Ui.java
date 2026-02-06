@@ -49,12 +49,22 @@ public class Ui {
      * @param taskList The task list to display
      */
     public void showAllTasks(TaskList taskList) {
-        String listString = "  Here are the tasks in your list:\n";
+        prettyPrint(getAllTasksMessage(taskList));
+    }
+
+    /**
+     * Returns a formatted string of all tasks in the task list.
+     *
+     * @param taskList The task list to display
+     * @return Formatted string of all tasks
+     */
+    public String getAllTasksMessage(TaskList taskList) {
+        String listString = "Here are the tasks in your list:\n";
         for (int i = 0; i < taskList.getSize(); i++) {
             Task task = taskList.getTask(i);
-            listString += ("  " + (i + 1) + ". " + task.toString() + "\n");
+            listString += ((i + 1) + ". " + task.toString() + "\n");
         }
-        prettyPrint(listString);
+        return listString;
     }
 
     /**
@@ -63,10 +73,17 @@ public class Ui {
      * @param task The task that was marked
      */
     public void showMarked(Task task) {
-        prettyPrint("""
-                Great! I've marked this task as done:
-                [%s] %s
-                """.formatted(task.getStatusIcon(), task.getDescription()));
+        prettyPrint(getMarkedMessage(task));
+    }
+
+    /**
+     * Returns a formatted string when a task is marked as done.
+     *
+     * @param task The task that was marked
+     * @return Formatted message string
+     */
+    public String getMarkedMessage(Task task) {
+        return "Great! I've marked this task as done:\n" + task.toString();
     }
 
     /**
@@ -75,10 +92,17 @@ public class Ui {
      * @param task The task that was unmarked
      */
     public void showUnmarked(Task task) {
-        prettyPrint("""
-                OK, I've marked this task as not done yet:
-                [%s] %s
-                """.formatted(task.getStatusIcon(), task.getDescription()));
+        prettyPrint(getUnmarkedMessage(task));
+    }
+
+    /**
+     * Returns a formatted string when a task is unmarked.
+     *
+     * @param task The task that was unmarked
+     * @return Formatted message string
+     */
+    public String getUnmarkedMessage(Task task) {
+        return "OK, I've marked this task as not done yet:\n" + task.toString();
     }
 
     /**
@@ -87,10 +111,7 @@ public class Ui {
      * @param task The todo task that was added
      */
     public void showAddedTodo(Task task) {
-        prettyPrint("""
-                Got it. I've added this task:
-                %s
-                """.formatted(task.toString()));
+        prettyPrint(getAddedTaskMessage(task));
     }
 
     /**
@@ -99,10 +120,7 @@ public class Ui {
      * @param task The deadline task that was added
      */
     public void showAddedDeadline(Task task) {
-        prettyPrint("""
-                Got it. I've added this task:
-                %s
-                """.formatted(task.toString()));
+        prettyPrint(getAddedTaskMessage(task));
     }
 
     /**
@@ -111,10 +129,17 @@ public class Ui {
      * @param task The event task that was added
      */
     public void showAddedEvent(Task task) {
-        prettyPrint("""
-                Got it. I've added this task:
-                %s
-                """.formatted(task.toString()));
+        prettyPrint(getAddedTaskMessage(task));
+    }
+
+    /**
+     * Returns a formatted string when a task is added.
+     *
+     * @param task The task that was added
+     * @return Formatted message string
+     */
+    public String getAddedTaskMessage(Task task) {
+        return "Got it. I've added this task:\n" + task.toString();
     }
 
     /**
@@ -123,10 +148,17 @@ public class Ui {
      * @param task The task that was removed
      */
     public void showRemovedTask(Task task) {
-        prettyPrint("""
-                Okay. I've removed this task:
-                %s
-                """.formatted(task.toString()));
+        prettyPrint(getRemovedTaskMessage(task));
+    }
+
+    /**
+     * Returns a formatted string when a task is removed.
+     *
+     * @param task The task that was removed
+     * @return Formatted message string
+     */
+    public String getRemovedTaskMessage(Task task) {
+        return "Okay. I've removed this task:\n" + task.toString();
     }
 
     /**
@@ -135,34 +167,56 @@ public class Ui {
      * @param foundTasks The list of matching tasks
      */
     public void showFoundTasks(ArrayList<Task> foundTasks) {
+        prettyPrint(getFoundTasksMessage(foundTasks));
+    }
+
+    /**
+     * Returns a formatted string of tasks that match the search criteria.
+     *
+     * @param foundTasks The list of matching tasks
+     * @return Formatted message string
+     */
+    public String getFoundTasksMessage(ArrayList<Task> foundTasks) {
         if (foundTasks.isEmpty()) {
-            prettyPrint("No matching tasks found.");
-            return;
+            return "No matching tasks found.";
         }
         String findString = "Here are the matching tasks in your list:\n";
         for (int i = 0; i < foundTasks.size(); i++) {
-            findString += ((i + 1) + "." + foundTasks.get(i).toString() + "\n");
+            findString += ((i + 1) + ". " + foundTasks.get(i).toString() + "\n");
         }
-        prettyPrint(findString);
+        return findString;
     }
 
     /**
      * Displays the welcome message.
      */
     public void showWelcome() {
-        prettyPrint("""
-                Hello! I'm Lyra
-                What can I do for you?
-                """);
+        prettyPrint(getWelcomeMessage());
+    }
+
+    /**
+     * Returns the welcome message.
+     *
+     * @return Welcome message string
+     */
+    public String getWelcomeMessage() {
+        return "Hello! I'm Lyra\nWhat can I do for you?";
     }
 
     /**
      * Displays the goodbye message.
      */
     public void showGoodbye() {
-        prettyPrint("""
-                Bye. Hope to see you again soon!
-                """);
+        prettyPrint(getGoodbyeMessage());
+    }
+
+    /**
+     * Returns the goodbye message.
+     *
+     * @return Goodbye message string
+     */
+    public String getGoodbyeMessage() {
+        return "Bye. Hope to see you again soon!";
     }
 
     /**
@@ -171,9 +225,17 @@ public class Ui {
      * @param errorMessage The error message to display
      */
     public void showError(String errorMessage) {
-        prettyPrint(String.format("""
-                Oh No!!! %s
-                """, errorMessage));
+        prettyPrint(getErrorMessage(errorMessage));
+    }
+
+    /**
+     * Returns a formatted error message.
+     *
+     * @param errorMessage The error message
+     * @return Formatted error message string
+     */
+    public String getErrorMessage(String errorMessage) {
+        return "Oh No!!! " + errorMessage;
     }
 
     /**

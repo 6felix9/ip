@@ -29,6 +29,77 @@ public class Lyra {
     }
 
     /**
+     * Processes a user command and returns the bot's response.
+     *
+     * @param input The user's input command
+     * @return The bot's response as a string
+     */
+    public String getResponse(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            return "";
+        }
+
+        try {
+            String fullCommand = input.trim();
+            Command commandType = parser.getCommand(fullCommand);
+
+            switch (commandType) {
+            case BYE:
+                return ui.getGoodbyeMessage();
+
+            case MARK:
+                int markIndex = parser.parseIndex(fullCommand);
+                Task markedTask = taskList.markTask(markIndex);
+                storage.saveTasks(taskList.getTasks());
+                return ui.getMarkedMessage(markedTask);
+
+            case UNMARK:
+                int unmarkIndex = parser.parseIndex(fullCommand);
+                Task unmarkedTask = taskList.unmarkTask(unmarkIndex);
+                storage.saveTasks(taskList.getTasks());
+                return ui.getUnmarkedMessage(unmarkedTask);
+
+            case LIST:
+                return ui.getAllTasksMessage(taskList);
+
+            case TODO:
+                Todo newTodo = parser.parseTodo(fullCommand);
+                taskList.addTask(newTodo);
+                storage.saveTasks(taskList.getTasks());
+                return ui.getAddedTaskMessage(newTodo);
+
+            case DEADLINE:
+                Deadline newDeadline = parser.parseDeadline(fullCommand);
+                taskList.addTask(newDeadline);
+                storage.saveTasks(taskList.getTasks());
+                return ui.getAddedTaskMessage(newDeadline);
+
+            case EVENT:
+                Event newEvent = parser.parseEvent(fullCommand);
+                taskList.addTask(newEvent);
+                storage.saveTasks(taskList.getTasks());
+                return ui.getAddedTaskMessage(newEvent);
+
+            case DELETE:
+                int deleteIndex = parser.parseIndex(fullCommand);
+                Task removedTask = taskList.removeTask(deleteIndex);
+                storage.saveTasks(taskList.getTasks());
+                return ui.getRemovedTaskMessage(removedTask);
+
+            case FIND:
+                TaskType typeToFind = parser.parseTaskType(fullCommand);
+                ArrayList<Task> foundTasks = taskList.findTasks(typeToFind);
+                return ui.getFoundTasksMessage(foundTasks);
+
+            default:
+                throw new LyraException("I'm sorry, but I don't know what that means :-(");
+            }
+        } catch (LyraException e) {
+            return ui.getErrorMessage(e.getMessage());
+        }
+    }
+
+    /**
      * Runs the Lyra application.
      */
     public void run() {
