@@ -1,6 +1,7 @@
 package lyra;
 
 import java.io.IOException;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -39,7 +40,7 @@ public class DialogBox extends HBox {
     }
 
     /**
-     * Creates a user dialog box (image on right).
+     * Creates a user dialog box (text on left, image on right).
      *
      * @param text The user's message
      * @param img The user avatar image
@@ -63,11 +64,13 @@ public class DialogBox extends HBox {
     }
 
     /**
-     * Flips the dialog box so the image is on the right (for user messages).
+     * Flips the dialog box so the text is on the left and image is on the right (for user messages).
      */
     private void flip() {
         this.setAlignment(Pos.TOP_RIGHT);
         dialog.setAlignment(Pos.CENTER_RIGHT);
-        getChildren().setAll(dialog, avatar);
+        // Reorder children so text appears on left, avatar on right
+        getChildren().clear();
+        getChildren().addAll(dialog, avatar);
     }
 }

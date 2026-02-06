@@ -1,6 +1,7 @@
 package lyra;
 
 import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -21,10 +22,10 @@ public class Main extends Application {
             stage.setScene(scene);
             stage.setTitle("Lyra");
             stage.setResizable(false);
-            
+
             MainWindow mw = fxmlLoader.<MainWindow>getController();
             mw.setLyra(lyra);
-            
+
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
