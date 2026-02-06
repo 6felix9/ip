@@ -1,16 +1,30 @@
 package lyra;
 
+/**
+ * Represents a task with a description and completion status.
+ */
 public class Task {
     protected String description;
     protected boolean isDone;
     protected TaskType type;
 
+    /**
+     * Creates a Task with the specified description (defaults to TODO type).
+     *
+     * @param description The task description
+     */
     public Task(String description) {
         this.description = description;
         this.isDone = false;
         this.type = TaskType.TODO;
     }
 
+    /**
+     * Creates a Task with the specified description and type.
+     *
+     * @param description The task description
+     * @param type The task type
+     */
     public Task(String description, TaskType type) {
         this.description = description;
         this.isDone = false;

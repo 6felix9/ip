@@ -1,5 +1,8 @@
 package lyra;
 
+/**
+ * Represents a todo task without any date/time.
+ */
 public class Todo extends Task {
 
     public Todo(String description) {

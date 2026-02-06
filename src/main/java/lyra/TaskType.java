@@ -1,5 +1,8 @@
 package lyra;
 
+/**
+ * Represents the types of tasks in Lyra.
+ */
 public enum TaskType {
     TODO("T"),
     DEADLINE("D"),
