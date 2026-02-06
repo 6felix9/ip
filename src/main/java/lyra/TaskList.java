@@ -3,10 +3,10 @@ package lyra;
 import java.util.ArrayList;
 
 /**
- * TaskList class for Lyra.
+ * Manages a list of tasks.
  */
 public class TaskList {
-    private ArrayList<Task> tasks;
+    private final ArrayList<Task> tasks;
 
     /**
      * Constructor for TaskList.
@@ -30,7 +30,11 @@ public class TaskList {
     }
 
     /**
-     * Remove a task from the list.
+     * Removes a task at the specified index.
+     *
+     * @param index The index of the task to remove
+     * @return The removed task
+     * @throws LyraException If the index is invalid
      */
     public Task removeTask(int index) throws LyraException {
         if (index < 0 || index >= this.tasks.size()) {
@@ -61,7 +65,11 @@ public class TaskList {
     }
 
     /**
-     * Mark a task as done.
+     * Marks a task as done at the specified index.
+     *
+     * @param index The index of the task to mark
+     * @return The marked task
+     * @throws LyraException If the index is invalid
      */
     public Task markTask(int index) throws LyraException {
         if (index < 0 || index >= this.tasks.size()) {
@@ -72,7 +80,11 @@ public class TaskList {
     }
 
     /**
-     * Mark a task as not done.
+     * Unmarks a task at the specified index.
+     *
+     * @param index The index of the task to unmark
+     * @return The unmarked task
+     * @throws LyraException If the index is invalid
      */
     public Task unmarkTask(int index) throws LyraException {
         if (index < 0 || index >= this.tasks.size()) {
@@ -81,14 +93,17 @@ public class TaskList {
         this.tasks.get(index).unmarkDone();
         return this.tasks.get(index);
     }
-    
+
     /**
-     * Find tasks by keyword
-     */ 
-    public ArrayList<Task> findTasks(String keyword) {
+     * Finds all tasks of the specified type.
+     *
+     * @param type The type of tasks to find
+     * @return A list of matching tasks
+     */
+    public ArrayList<Task> findTasks(TaskType type) {
         ArrayList<Task> foundTasks = new ArrayList<>();
         for (Task task : this.tasks) {
-            if (task.getDescription().contains(keyword)) {
+            if (task.getType() == type) {
                 foundTasks.add(task);
             }
         }

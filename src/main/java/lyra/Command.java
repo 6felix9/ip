@@ -1,7 +1,7 @@
 package lyra;
 
 /**
- * Enum class for Command.
+ * Represents the types of commands available in Lyra.
  */
 public enum Command {
     BYE,

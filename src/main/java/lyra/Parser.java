@@ -1,18 +1,22 @@
 package lyra;
 
-import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 /**
- * Parser class for Lyra.
+ * Parses user input into commands and task objects.
  */
 public class Parser {
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/MM/yyyy HHmm");
 
     /**
-     * Parses a date-time string into a LocalDateTime object based on a specific pattern.
+     * Parse the date string into a Date object.
+     *
+     * @param input The date string to parse
+     * @return The parsed LocalDateTime
+     * @throws LyraException If the date format is invalid
      */
     private LocalDateTime parseDateTime(String input) throws LyraException {
         try {
@@ -23,7 +27,11 @@ public class Parser {
     }
 
     /**
-     * Identifies and returns the Command type from the raw user input.
+     * Extracts the command type from a user input string.
+     *
+     * @param command The user input string
+     * @return The Command enum value
+     * @throws LyraException If the command is not recognized
      */
     public Command getCommand(String command) throws LyraException {
         try {
@@ -35,7 +43,10 @@ public class Parser {
     }
 
     /**
-     * Extracts the description from the input and creates a new Todo task.
+     * Parses a todo command and creates a Todo task.
+     *
+     * @param command The todo command string
+     * @return A Todo object
      */
     public Todo parseTodo(String command) {
         String description = command.substring(command.indexOf(" ") + 1);
@@ -43,65 +54,103 @@ public class Parser {
     }
 
     /**
-     * Parses the description and deadline time to create a new Deadline task.
+     * Parses a deadline command and creates a Deadline task.
+     *
+     * @param command The deadline command string
+     * @return A Deadline object
+     * @throws LyraException If the command format is invalid
      */
     public Deadline parseDeadline(String command) throws LyraException {
         String content = command.substring(command.indexOf(" ") + 1);
+
+        // 2. Split by the delimiter
         String[] parts = content.split(" /by ", 2);
-        
+
         if (parts.length < 2) {
             throw new LyraException("A deadline must have a /by time!");
         }
-        
-        return new Deadline(parts[0], parseDateTime(parts[1])); 
+
+        // 3. Return the Deadline object
+        return new Deadline(parts[0], parseDateTime(parts[1]));
     }
 
     /**
      * Parses the description, start time, and end time to create a new Event task.
+=======
+
+        // 3. Return the Deadline object
+        return new Deadline(parts[0], parseDateTime(parts[1]));
+    }
+
+    /**
+     * Parses an event command and creates an Event task.
+     *
+     * @param command The event command string
+     * @return An Event object
+     * @throws LyraException If the command format is invalid
      */
     public Event parseEvent(String command) throws LyraException {
         String content = command.substring(command.indexOf(" ") + 1);
-        
+
+        // 2. Split by the delimiter
         String[] firstSplit = content.split(" /from ", 2);
         if (firstSplit.length < 2) {
             throw new LyraException("Event needs /from!");
         }
-        
+
+        // 3. Split by the delimiter
         String[] secondSplit = firstSplit[1].split(" /to ", 2);
         if (secondSplit.length < 2) {
             throw new LyraException("Event needs /to!");
         }
-        
+
+        // 4. Return the Event object
         return new Event(firstSplit[0], parseDateTime(secondSplit[0]), parseDateTime(secondSplit[1]));
     }
 
     /**
-     * Extracts the task index from the command and converts it to a zero-based integer.
+     * Parses a task index from a command string.
+     *
+     * @param command The command string containing an index
+     * @return The zero-based index
+     * @throws LyraException If the index is invalid or missing
      */
     public int parseIndex(String command) throws LyraException {
         try {
             String[] parts = command.split(" ");
-            
+
+            // 2. Check if the user actually provided a number
             if (parts.length < 2) {
                 throw new LyraException("Please specify a task number!");
             }
-            
+
+            // 3. Parse the string to an int
             int userIndex = Integer.parseInt(parts[1]);
-            return userIndex - 1; 
-            
+
+            // 4. Convert 1-based (User) to 0-based (Java)
+            return userIndex - 1;
+
         } catch (NumberFormatException e) {
             throw new LyraException("That's not a valid number! Please use digits (e.g., 1, 2, 3).");
         }
     }
 
     /**
-     * Extracts the keyword from the find command.
+     * Parses a task type from a find command.
+     *
+     * @param input The find command string
+     * @return The TaskType enum value
+     * @throws LyraException If the task type is invalid or missing
      */
-    public String parseKeyword(String command) throws LyraException {
-        String[] parts = command.trim().split(" ", 2);
-        if (parts.length < 2 || parts[1].trim().isEmpty()) {
-            throw new LyraException("Please specify a keyword to find!");
+    public TaskType parseTaskType(String input) throws LyraException {
+        try {
+            String[] parts = input.split(" ");
+            if (parts.length < 2) {
+                throw new LyraException("Please specify a task type (todo, deadline, or event).");
+            }
+            return TaskType.valueOf(parts[1].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new LyraException("Invalid task type! Please use: todo, deadline, event.");
         }
-        return parts[1].trim();
     }
 }

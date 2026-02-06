@@ -1,7 +1,7 @@
 package lyra;
 
 /**
- * Exception class for Lyra.
+ * Represents exceptions specific to the Lyra application.
  */
 public class LyraException extends Exception {
     public LyraException(String message) {

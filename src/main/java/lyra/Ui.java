@@ -1,13 +1,13 @@
 package lyra;
 
-import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
- * Ui class for Lyra.
+ * Handles user interface interactions.
  */
 public class Ui {
-    private final String SEPARATOR = "____________________________________________________________";
+    private final String separator = "____________________________________________________________";
     private final Scanner scanner;
 
     /**
@@ -18,7 +18,9 @@ public class Ui {
     }
 
     /**
-     * Read the command from the user.
+     * Reads a command from the user.
+     *
+     * @return The user's input command
      */
     public String readCommand() {
         System.out.print("> ");
@@ -27,7 +29,9 @@ public class Ui {
     }
 
     /**
-     * Show the tasks in the list.
+     * Displays all tasks when loading from storage.
+     *
+     * @param taskList The task list to display
      */
     public void showLoadTasks(TaskList taskList) {
         prettyPrint("""
@@ -40,7 +44,9 @@ public class Ui {
     }
 
     /**
-     * Show all tasks in the list.
+     * Displays all tasks in the task list.
+     *
+     * @param taskList The task list to display
      */
     public void showAllTasks(TaskList taskList) {
         String listString = "  Here are the tasks in your list:\n";
@@ -52,7 +58,9 @@ public class Ui {
     }
 
     /**
-     * Show the marked task.
+     * Displays a message when a task is marked as done.
+     *
+     * @param task The task that was marked
      */
     public void showMarked(Task task) {
         prettyPrint("""
@@ -62,7 +70,9 @@ public class Ui {
     }
 
     /**
-     * Show the unmarked task.
+     * Displays a message when a task is unmarked.
+     *
+     * @param task The task that was unmarked
      */
     public void showUnmarked(Task task) {
         prettyPrint("""
@@ -72,7 +82,9 @@ public class Ui {
     }
 
     /**
-     * Show the added todo task.
+     * Displays a message when a todo is added.
+     *
+     * @param task The todo task that was added
      */
     public void showAddedTodo(Task task) {
         prettyPrint("""
@@ -82,7 +94,9 @@ public class Ui {
     }
 
     /**
-     * Show the added deadline task.
+     * Displays a message when a deadline is added.
+     *
+     * @param task The deadline task that was added
      */
     public void showAddedDeadline(Task task) {
         prettyPrint("""
@@ -92,7 +106,9 @@ public class Ui {
     }
 
     /**
-     * Show the added event task.
+     * Displays a message when an event is added.
+     *
+     * @param task The event task that was added
      */
     public void showAddedEvent(Task task) {
         prettyPrint("""
@@ -102,7 +118,9 @@ public class Ui {
     }
 
     /**
-     * Show the removed task.
+     * Displays a message when a task is removed.
+     *
+     * @param task The task that was removed
      */
     public void showRemovedTask(Task task) {
         prettyPrint("""
@@ -112,7 +130,9 @@ public class Ui {
     }
 
     /**
-     * Show the found tasks.
+     * Displays tasks that match the search criteria.
+     *
+     * @param foundTasks The list of matching tasks
      */
     public void showFoundTasks(ArrayList<Task> foundTasks) {
         if (foundTasks.isEmpty()) {
@@ -127,7 +147,7 @@ public class Ui {
     }
 
     /**
-     * Show the welcome message.
+     * Displays the welcome message.
      */
     public void showWelcome() {
         prettyPrint("""
@@ -137,7 +157,7 @@ public class Ui {
     }
 
     /**
-     * Show the goodbye message.
+     * Displays the goodbye message.
      */
     public void showGoodbye() {
         prettyPrint("""
@@ -146,7 +166,9 @@ public class Ui {
     }
 
     /**
-     * Show the error message.
+     * Displays an error message.
+     *
+     * @param errorMessage The error message to display
      */
     public void showError(String errorMessage) {
         prettyPrint(String.format("""
@@ -158,11 +180,11 @@ public class Ui {
      * Pretty print the message.
      */
     private void prettyPrint(String message) {
-        System.out.println(SEPARATOR);
+        System.out.println(separator);
         System.out.print(message);
         if (!message.isEmpty() && !message.endsWith("\n")) {
             System.out.println();
         }
-        System.out.println(SEPARATOR);
+        System.out.println(separator);
     }
 }

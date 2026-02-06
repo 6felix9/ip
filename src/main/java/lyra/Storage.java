@@ -3,19 +3,35 @@ package lyra;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Scanner;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Scanner;
 
+/**
+ * Handles loading and saving tasks to a file.
+ */
 public class Storage {
     private static final String DONE_MARKER = "1";
 
     private File dataFile;
 
     /**
+     * Creates a Storage object with the specified file path.
+     *
+     * @param filePath The path to the data file
+     */
+    public Storage(String filePath) {
+        this.dataFile = new File(filePath);
+    }
+
+    /**
      * Parse the date string into a Date object.
+     *
+     * @param input The date string to parse
+     * @return The parsed LocalDateTime
+     * @throws LyraException If the date format is invalid
      */
     private LocalDateTime parseDateTime(String input) throws LyraException {
         try {
@@ -28,14 +44,10 @@ public class Storage {
     }
 
     /**
-     * Constructor for Storage.
-     */
-    public Storage(String filePath) {
-        this.dataFile = new File(filePath);
-    }
-
-    /**
      * Loads tasks from the data file.
+     *
+     * @return The list of tasks loaded from the file
+     * @throws LyraException If the file is not found or contains invalid data
      */
     public ArrayList<Task> loadTasks() throws LyraException {
         try {
@@ -44,30 +56,30 @@ public class Storage {
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine();
                 String[] parts = line.split(" \\| ");
-                
+
                 switch (parts[0]) {
-                    case "T":
-                        tasks.add(new Todo(parts[2]));
-                        if (parts[1].equals(DONE_MARKER)) {
-                            tasks.get(tasks.size() - 1).markDone();
-                        }
-                        break;
-                    case "D":
-                        tasks.add(new Deadline(parts[2], parseDateTime(parts[3])));
-                        if (parts[1].equals(DONE_MARKER)) {
-                            tasks.get(tasks.size() - 1).markDone();
-                        }
-                        break;
-                    case "E":
-                        tasks.add(new Event(parts[2], parseDateTime(parts[3]), parseDateTime(parts[4])));
-                        if (parts[1].equals(DONE_MARKER)) {
-                            tasks.get(tasks.size() - 1).markDone();
-                        }
-                        break;
-                    default:
-                        throw new LyraException("Invalid task type in file.");
+                case "T":
+                    tasks.add(new Todo(parts[2]));
+                    if (parts[1].equals(DONE_MARKER)) {
+                        tasks.get(tasks.size() - 1).markDone();
+                    }
+                    break;
+                case "D":
+                    tasks.add(new Deadline(parts[2], parseDateTime(parts[3])));
+                    if (parts[1].equals(DONE_MARKER)) {
+                        tasks.get(tasks.size() - 1).markDone();
+                    }
+                    break;
+                case "E":
+                    tasks.add(new Event(parts[2], parseDateTime(parts[3]), parseDateTime(parts[4])));
+                    if (parts[1].equals(DONE_MARKER)) {
+                        tasks.get(tasks.size() - 1).markDone();
+                    }
+                    break;
+                default:
+                    throw new LyraException("Invalid task type in file.");
                 }
-                
+
             }
             fileScanner.close();
             return tasks;
@@ -75,10 +87,11 @@ public class Storage {
             throw new LyraException("Data file not found!");
         }
     }
-
-
     /**
      * Saves tasks to the data file.
+     *
+     * @param tasks The list of tasks to save
+     * @throws LyraException If unable to write to the file
      */
     public void saveTasks(ArrayList<Task> tasks) throws LyraException {
         try {

@@ -1,7 +1,7 @@
 package lyra;
 
 /**
- * Task class for Lyra.
+ * Represents a task with a description and completion status.
  */
 public class Task {
     private static final String DONE_MARKER = "1";
@@ -14,7 +14,9 @@ public class Task {
     private TaskType type;
 
     /**
-     * Constructor for Task.
+     * Creates a Task with the specified description (defaults to TODO type).
+     *
+     * @param description The task description
      */
     public Task(String description) {
         this.description = description;
@@ -23,7 +25,10 @@ public class Task {
     }
 
     /**
-     * Constructor for Task.
+     * Creates a Task with the specified description and type.
+     *
+     * @param description The task description
+     * @param type The task type
      */
     public Task(String description, TaskType type) {
         this.description = description;

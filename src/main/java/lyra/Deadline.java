@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Deadline class for Lyra.
+ * Represents a deadline task with a due date.
  */
 public class Deadline extends Task {
     private static final String DONE_MARKER = "1";
@@ -13,7 +13,10 @@ public class Deadline extends Task {
     private LocalDateTime by;
 
     /**
-     * Constructor for Deadline.
+     * Creates a Deadline task with the specified description and due date.
+     *
+     * @param description The task description
+     * @param by The due date
      */
     public Deadline(String description, LocalDateTime by) {
         super(description, TaskType.DEADLINE);
@@ -32,8 +35,8 @@ public class Deadline extends Task {
      */
     @Override
     public String toFileString() {
-        return "D | " + (getIsDone() ? DONE_MARKER : NOT_DONE_MARKER) + " | " + getDescription() + " | " +
-            by.format(DateTimeFormatter.ofPattern("d/MM/yyyy HHmm"));
+        return "D | " + (getIsDone() ? DONE_MARKER : NOT_DONE_MARKER) + " | " + getDescription() + " | "
+                + by.format(DateTimeFormatter.ofPattern("d/MM/yyyy HHmm"));
     }
 
     /**
@@ -41,7 +44,7 @@ public class Deadline extends Task {
      */
     @Override
     public String toString() {
-        return "[D]" + super.toString() + " (by: " + 
-            by.format(DateTimeFormatter.ofPattern("MMM d yyyy, h:mma")) + ")";
+        return "[D]" + super.toString() + " (by: "
+                + by.format(DateTimeFormatter.ofPattern("MMM d yyyy, h:mma")) + ")";
     }
 }

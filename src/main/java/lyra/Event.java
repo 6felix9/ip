@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Event class for Lyra.
+ * Represents an event task with a start and end time.
  */
 public class Event extends Task {
     private static final String DONE_MARKER = "1";
@@ -14,7 +14,11 @@ public class Event extends Task {
     private LocalDateTime to;
 
     /**
-     * Constructor for Event.
+     * Creates an Event task with the specified description and time period.
+     *
+     * @param description The task description
+     * @param from The start time
+     * @param to The end time
      */
     public Event(String description, LocalDateTime from, LocalDateTime to) {
         super(description, TaskType.EVENT);
@@ -41,9 +45,9 @@ public class Event extends Task {
      */
     @Override
     public String toFileString() {
-        return "E | " + (getIsDone() ? DONE_MARKER : NOT_DONE_MARKER) + " | " + getDescription() + " | " +
-                from.format(DateTimeFormatter.ofPattern("d/MM/yyyy HHmm")) + " | " +
-                to.format(DateTimeFormatter.ofPattern("d/MM/yyyy HHmm"));
+        return "E | " + (getIsDone() ? DONE_MARKER : NOT_DONE_MARKER) + " | " + getDescription() + " | "
+                + from.format(DateTimeFormatter.ofPattern("d/MM/yyyy HHmm")) + " | "
+                + to.format(DateTimeFormatter.ofPattern("d/MM/yyyy HHmm"));
     }
 
     /**
@@ -51,8 +55,8 @@ public class Event extends Task {
      */
     @Override
     public String toString() {
-        return "[E]" + super.toString() + " (from: " + 
-               from.format(DateTimeFormatter.ofPattern("MMM d yyyy, h:mma")) + " to: " +
-               to.format(DateTimeFormatter.ofPattern("MMM d yyyy, h:mma")) + ")";
+        return "[E]" + super.toString() + " (from: "
+                + from.format(DateTimeFormatter.ofPattern("MMM d yyyy, h:mma")) + " to: "
+                + to.format(DateTimeFormatter.ofPattern("MMM d yyyy, h:mma")) + ")";
     }
 }

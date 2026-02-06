@@ -1,7 +1,7 @@
 package lyra;
 
 /**
- * Todo class for Lyra.
+ * Represents a todo task without any date/time.
  */
 public class Todo extends Task {
     private static final String DONE_MARKER = "1";
