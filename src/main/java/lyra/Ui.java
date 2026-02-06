@@ -7,7 +7,7 @@ import java.util.Scanner;
  * Handles user interface interactions.
  */
 public class Ui {
-    private final String SEPARATOR = "____________________________________________________________";
+    private final String separator = "____________________________________________________________";
     private final Scanner scanner;
 
     public Ui() {
@@ -174,11 +174,11 @@ public class Ui {
     }
 
     private void prettyPrint(String message) {
-        System.out.println(SEPARATOR);
+        System.out.println(separator);
         System.out.print(message);
         if (!message.isEmpty() && !message.endsWith("\n")) {
             System.out.println();
         }
-        System.out.println(SEPARATOR);
+        System.out.println(separator);
     }
 }
