@@ -3,7 +3,6 @@ package lyra;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 
 /**
  * Parses user input into commands and task objects.
@@ -69,14 +68,6 @@ public class Parser {
         if (parts.length < 2) {
             throw new LyraException("A deadline must have a /by time!");
         }
-
-        // 3. Return the Deadline object
-        return new Deadline(parts[0], parseDateTime(parts[1]));
-    }
-
-    /**
-     * Parses the description, start time, and end time to create a new Event task.
-=======
 
         // 3. Return the Deadline object
         return new Deadline(parts[0], parseDateTime(parts[1]));
