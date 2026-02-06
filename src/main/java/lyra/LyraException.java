@@ -7,4 +7,8 @@ public class LyraException extends Exception {
     public LyraException(String message) {
         super(message);
     }
+
+    public LyraException(String format, Object... args) {
+        super(String.format(format, args));
+    }
 }

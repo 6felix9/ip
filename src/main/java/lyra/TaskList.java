@@ -38,7 +38,7 @@ public class TaskList {
      */
     public Task removeTask(int index) throws LyraException {
         if (index < 0 || index >= this.tasks.size()) {
-            throw new LyraException("Invalid task number!");
+            throw new LyraException("Invalid task number: %d", index + 1);
         }
         return this.tasks.remove(index);
     }
@@ -73,7 +73,7 @@ public class TaskList {
      */
     public Task markTask(int index) throws LyraException {
         if (index < 0 || index >= this.tasks.size()) {
-            throw new LyraException("Invalid task number!");
+            throw new LyraException("Invalid task number: %d", index + 1);
         }
         this.tasks.get(index).markDone();
         return this.tasks.get(index);
@@ -88,7 +88,7 @@ public class TaskList {
      */
     public Task unmarkTask(int index) throws LyraException {
         if (index < 0 || index >= this.tasks.size()) {
-            throw new LyraException("Invalid task number!");
+            throw new LyraException("Invalid task number: %d", index + 1);
         }
         this.tasks.get(index).unmarkDone();
         return this.tasks.get(index);
