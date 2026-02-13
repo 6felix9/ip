@@ -42,61 +42,177 @@ public class Lyra {
         try {
             String fullCommand = input.trim();
             Command commandType = parser.getCommand(fullCommand);
-
-            switch (commandType) {
-            case BYE:
-                return ui.getGoodbyeMessage();
-
-            case MARK:
-                int markIndex = parser.parseIndex(fullCommand);
-                Task markedTask = taskList.markTask(markIndex);
-                storage.saveTasks(taskList.getTasks());
-                return ui.getMarkedMessage(markedTask);
-
-            case UNMARK:
-                int unmarkIndex = parser.parseIndex(fullCommand);
-                Task unmarkedTask = taskList.unmarkTask(unmarkIndex);
-                storage.saveTasks(taskList.getTasks());
-                return ui.getUnmarkedMessage(unmarkedTask);
-
-            case LIST:
-                return ui.getAllTasksMessage(taskList);
-
-            case TODO:
-                Todo newTodo = parser.parseTodo(fullCommand);
-                taskList.addTask(newTodo);
-                storage.saveTasks(taskList.getTasks());
-                return ui.getAddedTaskMessage(newTodo);
-
-            case DEADLINE:
-                Deadline newDeadline = parser.parseDeadline(fullCommand);
-                taskList.addTask(newDeadline);
-                storage.saveTasks(taskList.getTasks());
-                return ui.getAddedTaskMessage(newDeadline);
-
-            case EVENT:
-                Event newEvent = parser.parseEvent(fullCommand);
-                taskList.addTask(newEvent);
-                storage.saveTasks(taskList.getTasks());
-                return ui.getAddedTaskMessage(newEvent);
-
-            case DELETE:
-                int deleteIndex = parser.parseIndex(fullCommand);
-                Task removedTask = taskList.removeTask(deleteIndex);
-                storage.saveTasks(taskList.getTasks());
-                return ui.getRemovedTaskMessage(removedTask);
-
-            case FIND:
-                TaskType typeToFind = parser.parseTaskType(fullCommand);
-                ArrayList<Task> foundTasks = taskList.findTasks(typeToFind);
-                return ui.getFoundTasksMessage(foundTasks);
-
-            default:
-                throw new LyraException("I'm sorry, but I don't know what that means :-(");
-            }
+            return executeCommand(commandType, fullCommand);
         } catch (LyraException e) {
             return ui.getErrorMessage(e.getMessage());
         }
+    }
+
+    /**
+     * Executes a command and returns the response message.
+     *
+     * @param commandType The type of command to execute
+     * @param fullCommand The full command string
+     * @return The response message as a string
+     * @throws LyraException If the command execution fails
+     */
+    private String executeCommand(Command commandType, String fullCommand) throws LyraException {
+        switch (commandType) {
+        case BYE:
+            return handleByeCommand();
+
+        case MARK:
+            return handleMarkCommand(fullCommand);
+
+        case UNMARK:
+            return handleUnmarkCommand(fullCommand);
+
+        case LIST:
+            return handleListCommand();
+
+        case TODO:
+            return handleTodoCommand(fullCommand);
+
+        case DEADLINE:
+            return handleDeadlineCommand(fullCommand);
+
+        case EVENT:
+            return handleEventCommand(fullCommand);
+
+        case DELETE:
+            return handleDeleteCommand(fullCommand);
+
+        case FIND:
+            return handleFindCommand(fullCommand);
+
+        default:
+            throw new LyraException("I'm sorry, but I don't know what that means :-(");
+        }
+    }
+
+    /**
+     * Handles the BYE command.
+     *
+     * @return The goodbye message
+     */
+    private String handleByeCommand() {
+        return ui.getGoodbyeMessage();
+    }
+
+    /**
+     * Handles the MARK command.
+     *
+     * @param fullCommand The full command string
+     * @return The response message
+     * @throws LyraException If the command execution fails
+     */
+    private String handleMarkCommand(String fullCommand) throws LyraException {
+        int markIndex = parser.parseIndex(fullCommand);
+        Task markedTask = taskList.markTask(markIndex);
+        saveTasks();
+        return ui.getMarkedMessage(markedTask);
+    }
+
+    /**
+     * Handles the UNMARK command.
+     *
+     * @param fullCommand The full command string
+     * @return The response message
+     * @throws LyraException If the command execution fails
+     */
+    private String handleUnmarkCommand(String fullCommand) throws LyraException {
+        int unmarkIndex = parser.parseIndex(fullCommand);
+        Task unmarkedTask = taskList.unmarkTask(unmarkIndex);
+        saveTasks();
+        return ui.getUnmarkedMessage(unmarkedTask);
+    }
+
+    /**
+     * Handles the LIST command.
+     *
+     * @return The response message
+     * @throws LyraException If the task list contains invalid data
+     */
+    private String handleListCommand() throws LyraException {
+        return ui.getAllTasksMessage(taskList);
+    }
+
+    /**
+     * Handles the TODO command.
+     *
+     * @param fullCommand The full command string
+     * @return The response message
+     * @throws LyraException If the command execution fails
+     */
+    private String handleTodoCommand(String fullCommand) throws LyraException {
+        Todo newTodo = parser.parseTodo(fullCommand);
+        taskList.addTask(newTodo);
+        saveTasks();
+        return ui.getAddedTaskMessage(newTodo);
+    }
+
+    /**
+     * Handles the DEADLINE command.
+     *
+     * @param fullCommand The full command string
+     * @return The response message
+     * @throws LyraException If the command execution fails
+     */
+    private String handleDeadlineCommand(String fullCommand) throws LyraException {
+        Deadline newDeadline = parser.parseDeadline(fullCommand);
+        taskList.addTask(newDeadline);
+        saveTasks();
+        return ui.getAddedTaskMessage(newDeadline);
+    }
+
+    /**
+     * Handles the EVENT command.
+     *
+     * @param fullCommand The full command string
+     * @return The response message
+     * @throws LyraException If the command execution fails
+     */
+    private String handleEventCommand(String fullCommand) throws LyraException {
+        Event newEvent = parser.parseEvent(fullCommand);
+        taskList.addTask(newEvent);
+        saveTasks();
+        return ui.getAddedTaskMessage(newEvent);
+    }
+
+    /**
+     * Handles the DELETE command.
+     *
+     * @param fullCommand The full command string
+     * @return The response message
+     * @throws LyraException If the command execution fails
+     */
+    private String handleDeleteCommand(String fullCommand) throws LyraException {
+        int deleteIndex = parser.parseIndex(fullCommand);
+        Task removedTask = taskList.removeTask(deleteIndex);
+        saveTasks();
+        return ui.getRemovedTaskMessage(removedTask);
+    }
+
+    /**
+     * Handles the FIND command.
+     *
+     * @param fullCommand The full command string
+     * @return The response message
+     * @throws LyraException If the command execution fails
+     */
+    private String handleFindCommand(String fullCommand) throws LyraException {
+        TaskType typeToFind = parser.parseTaskType(fullCommand);
+        ArrayList<Task> foundTasks = taskList.findTasks(typeToFind);
+        return ui.getFoundTasksMessage(foundTasks);
+    }
+
+    /**
+     * Saves tasks to storage.
+     *
+     * @throws LyraException If saving fails
+     */
+    private void saveTasks() throws LyraException {
+        storage.saveTasks(taskList.getTasks());
     }
 
     /**
@@ -115,71 +231,29 @@ public class Lyra {
                 }
 
                 Command commandType = parser.getCommand(fullCommand);
+                String response = executeCommand(commandType, fullCommand);
+                displayResponse(commandType, response);
 
-                switch (commandType) {
-                case BYE:
-                    ui.showGoodbye();
+                if (commandType == Command.BYE) {
                     isExit = true;
-                    break;
-
-                case MARK:
-                    int markIndex = parser.parseIndex(fullCommand);
-                    Task markedTask = taskList.markTask(markIndex);
-                    ui.showMarked(markedTask);
-                    storage.saveTasks(taskList.getTasks());
-                    break;
-
-                case UNMARK:
-                    int unmarkIndex = parser.parseIndex(fullCommand);
-                    Task unmarkedTask = taskList.unmarkTask(unmarkIndex);
-                    ui.showUnmarked(unmarkedTask);
-                    storage.saveTasks(taskList.getTasks());
-                    break;
-
-                case LIST:
-                    ui.showAllTasks(taskList);
-                    break;
-
-                case TODO:
-                    Todo newTodo = parser.parseTodo(fullCommand);
-                    taskList.addTask(newTodo);
-                    ui.showAddedTodo(newTodo);
-                    storage.saveTasks(taskList.getTasks());
-                    break;
-
-                case DEADLINE:
-                    Deadline newDeadline = parser.parseDeadline(fullCommand);
-                    taskList.addTask(newDeadline);
-                    ui.showAddedDeadline(newDeadline);
-                    storage.saveTasks(taskList.getTasks());
-                    break;
-
-                case EVENT:
-                    Event newEvent = parser.parseEvent(fullCommand);
-                    taskList.addTask(newEvent);
-                    ui.showAddedEvent(newEvent);
-                    storage.saveTasks(taskList.getTasks());
-                    break;
-
-                case DELETE:
-                    int deleteIndex = parser.parseIndex(fullCommand);
-                    Task removedTask = taskList.removeTask(deleteIndex);
-                    ui.showRemovedTask(removedTask);
-                    storage.saveTasks(taskList.getTasks());
-                    break;
-
-                case FIND:
-                    TaskType typeToFind = parser.parseTaskType(fullCommand);
-                    ArrayList<Task> foundTasks = taskList.findTasks(typeToFind);
-                    ui.showFoundTasks(foundTasks);
-                    break;
-
-                default:
-                    throw new LyraException("I'm sorry, but I don't know what that means :-(");
                 }
             } catch (LyraException e) {
                 ui.showError(e.getMessage());
             }
+        }
+    }
+
+    /**
+     * Displays the response for CLI mode.
+     *
+     * @param commandType The type of command that was executed
+     * @param response The response message
+     */
+    private void displayResponse(Command commandType, String response) {
+        if (commandType == Command.BYE) {
+            ui.showGoodbye();
+        } else {
+            ui.displayMessage(response);
         }
     }
 

@@ -14,6 +14,9 @@ import java.util.Scanner;
  */
 public class Storage {
     private static final String DONE_MARKER = "1";
+    private static final String TASK_TYPE_TODO = "T";
+    private static final String TASK_TYPE_DEADLINE = "D";
+    private static final String TASK_TYPE_EVENT = "E";
 
     private File dataFile;
 
@@ -50,41 +53,50 @@ public class Storage {
      * @throws LyraException If the file is not found or contains invalid data
      */
     public ArrayList<Task> loadTasks() throws LyraException {
-        try {
-            Scanner fileScanner = new Scanner(dataFile);
+        try (Scanner fileScanner = new Scanner(dataFile)) {
             ArrayList<Task> tasks = new ArrayList<>();
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine();
                 String[] parts = line.split(" \\| ");
-
-                switch (parts[0]) {
-                case "T":
-                    tasks.add(new Todo(parts[2]));
-                    if (parts[1].equals(DONE_MARKER)) {
-                        tasks.get(tasks.size() - 1).markDone();
-                    }
-                    break;
-                case "D":
-                    tasks.add(new Deadline(parts[2], parseDateTime(parts[3])));
-                    if (parts[1].equals(DONE_MARKER)) {
-                        tasks.get(tasks.size() - 1).markDone();
-                    }
-                    break;
-                case "E":
-                    tasks.add(new Event(parts[2], parseDateTime(parts[3]), parseDateTime(parts[4])));
-                    if (parts[1].equals(DONE_MARKER)) {
-                        tasks.get(tasks.size() - 1).markDone();
-                    }
-                    break;
-                default:
-                    throw new LyraException("Invalid task type in file.");
-                }
-
+                Task task = createTaskFromParts(parts);
+                markTaskIfDone(task, parts[1]);
+                tasks.add(task);
             }
-            fileScanner.close();
             return tasks;
         } catch (FileNotFoundException e) {
             throw new LyraException("Data file not found!");
+        }
+    }
+
+    /**
+     * Creates a task from parsed file line parts.
+     *
+     * @param parts The split line parts
+     * @return The created task
+     * @throws LyraException If the task type is invalid
+     */
+    private Task createTaskFromParts(String[] parts) throws LyraException {
+        switch (parts[0]) {
+        case TASK_TYPE_TODO:
+            return new Todo(parts[2]);
+        case TASK_TYPE_DEADLINE:
+            return new Deadline(parts[2], parseDateTime(parts[3]));
+        case TASK_TYPE_EVENT:
+            return new Event(parts[2], parseDateTime(parts[3]), parseDateTime(parts[4]));
+        default:
+            throw new LyraException("Invalid task type in file.");
+        }
+    }
+
+    /**
+     * Marks the task as done if the status marker indicates it.
+     *
+     * @param task The task to potentially mark
+     * @param statusMarker The status marker from the file ("1" or "0")
+     */
+    private void markTaskIfDone(Task task, String statusMarker) {
+        if (statusMarker.equals(DONE_MARKER)) {
+            task.markDone();
         }
     }
     /**
@@ -94,13 +106,10 @@ public class Storage {
      * @throws LyraException If unable to write to the file
      */
     public void saveTasks(ArrayList<Task> tasks) throws LyraException {
-        try {
-            PrintWriter fileWriter = new PrintWriter(dataFile);
-
+        try (PrintWriter fileWriter = new PrintWriter(dataFile)) {
             for (Task task : tasks) {
                 fileWriter.println(task.toFileString());
             }
-            fileWriter.close();
         } catch (FileNotFoundException e) {
             throw new LyraException("Unable to write to data file.");
         }
