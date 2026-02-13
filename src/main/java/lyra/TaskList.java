@@ -30,6 +30,18 @@ public class TaskList {
     }
 
     /**
+     * Validates that the index is within bounds of the task list.
+     *
+     * @param index The index to validate
+     * @throws LyraException If the index is invalid
+     */
+    private void validateIndex(int index) throws LyraException {
+        if (index < 0 || index >= this.tasks.size()) {
+            throw new LyraException("Invalid task number!");
+        }
+    }
+
+    /**
      * Removes a task at the specified index.
      *
      * @param index The index of the task to remove
@@ -37,16 +49,19 @@ public class TaskList {
      * @throws LyraException If the index is invalid
      */
     public Task removeTask(int index) throws LyraException {
-        if (index < 0 || index >= this.tasks.size()) {
-            throw new LyraException("Invalid task number!");
-        }
+        validateIndex(index);
         return this.tasks.remove(index);
     }
 
     /**
      * Get a task from the list.
+     *
+     * @param index The index of the task to get
+     * @return The task at the specified index
+     * @throws LyraException If the index is invalid
      */
-    public Task getTask(int index) {
+    public Task getTask(int index) throws LyraException {
+        validateIndex(index);
         return this.tasks.get(index);
     }
 
@@ -72,9 +87,7 @@ public class TaskList {
      * @throws LyraException If the index is invalid
      */
     public Task markTask(int index) throws LyraException {
-        if (index < 0 || index >= this.tasks.size()) {
-            throw new LyraException("Invalid task number!");
-        }
+        validateIndex(index);
         this.tasks.get(index).markDone();
         return this.tasks.get(index);
     }
@@ -87,9 +100,7 @@ public class TaskList {
      * @throws LyraException If the index is invalid
      */
     public Task unmarkTask(int index) throws LyraException {
-        if (index < 0 || index >= this.tasks.size()) {
-            throw new LyraException("Invalid task number!");
-        }
+        validateIndex(index);
         this.tasks.get(index).unmarkDone();
         return this.tasks.get(index);
     }

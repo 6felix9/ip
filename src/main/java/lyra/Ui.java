@@ -32,8 +32,9 @@ public class Ui {
      * Displays all tasks when loading from storage.
      *
      * @param taskList The task list to display
+     * @throws LyraException If the task list contains invalid data
      */
-    public void showLoadTasks(TaskList taskList) {
+    public void showLoadTasks(TaskList taskList) throws LyraException {
         prettyPrint("""
                 Here are the tasks in your list:
                 """);
@@ -47,8 +48,9 @@ public class Ui {
      * Displays all tasks in the task list.
      *
      * @param taskList The task list to display
+     * @throws LyraException If the task list contains invalid data
      */
-    public void showAllTasks(TaskList taskList) {
+    public void showAllTasks(TaskList taskList) throws LyraException {
         prettyPrint(getAllTasksMessage(taskList));
     }
 
@@ -57,8 +59,9 @@ public class Ui {
      *
      * @param taskList The task list to display
      * @return Formatted string of all tasks
+     * @throws LyraException If the task list contains invalid data
      */
-    public String getAllTasksMessage(TaskList taskList) {
+    public String getAllTasksMessage(TaskList taskList) throws LyraException {
         String listString = "Here are the tasks in your list:\n";
         for (int i = 0; i < taskList.getSize(); i++) {
             Task task = taskList.getTask(i);

@@ -131,8 +131,9 @@ public class Lyra {
      * Handles the LIST command.
      *
      * @return The response message
+     * @throws LyraException If the task list contains invalid data
      */
-    private String handleListCommand() {
+    private String handleListCommand() throws LyraException {
         return ui.getAllTasksMessage(taskList);
     }
 
