@@ -41,6 +41,24 @@ public class Event extends Task {
     }
 
     /**
+     * Set the from date and time.
+     *
+     * @param from The new start time
+     */
+    public void setFrom(LocalDateTime from) {
+        this.from = from;
+    }
+
+    /**
+     * Set the to date and time.
+     *
+     * @param to The new end time
+     */
+    public void setTo(LocalDateTime to) {
+        this.to = to;
+    }
+
+    /**
      * Convert the Event object to a string for file storage.
      */
     @Override

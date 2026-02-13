@@ -109,6 +109,16 @@ public class Ui {
     }
 
     /**
+     * Returns a formatted string when a task is updated.
+     *
+     * @param task The task that was updated
+     * @return Formatted message string
+     */
+    public String getUpdatedTaskMessage(Task task) {
+        return "Got it. I've updated this task:\n" + task.toString();
+    }
+
+    /**
      * Displays a message when a todo is added.
      *
      * @param task The todo task that was added

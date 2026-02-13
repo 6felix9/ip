@@ -161,4 +161,71 @@ public class Parser {
             throw new LyraException("Invalid task type! Please use: todo, deadline, event.");
         }
     }
+
+    /**
+     * Parses an update command.
+     * Format: update &lt;index&gt; /description &lt;new desc&gt; or update &lt;index&gt; /by|/from|/to &lt;date&gt;
+     *
+     * @param command The update command string
+     * @return UpdateCommandData with parsed index, type, and value
+     * @throws LyraException If the command format is invalid
+     */
+    public UpdateCommandData parseUpdateCommand(String command) throws LyraException {
+        String content = command.substring("update".length()).trim();
+        if (content.isEmpty()) {
+            throw new LyraException("Please specify a task number and update type (e.g., /description or /by).");
+        }
+
+        if (content.contains(" /description ")) {
+            String[] parts = content.split(" /description ", 2);
+            if (parts.length < 2 || parts[1].trim().isEmpty()) {
+                throw new LyraException("Please provide a new description after /description");
+            }
+            int index = parseUpdateIndex(parts[0].trim());
+            return new UpdateCommandData(index, parts[1].trim());
+        } else if (content.contains(" /by ")) {
+            String[] parts = content.split(" /by ", 2);
+            if (parts.length < 2 || parts[1].trim().isEmpty()) {
+                throw new LyraException("Please provide a date after /by (e.g., 2/12/2024 1800)");
+            }
+            int index = parseUpdateIndex(parts[0].trim());
+            LocalDateTime dateValue = parseDateTime(parts[1].trim());
+            return new UpdateCommandData(index, "by", dateValue);
+        } else if (content.contains(" /from ")) {
+            String[] parts = content.split(" /from ", 2);
+            if (parts.length < 2 || parts[1].trim().isEmpty()) {
+                throw new LyraException("Please provide a date after /from (e.g., 2/12/2024 1800)");
+            }
+            int index = parseUpdateIndex(parts[0].trim());
+            LocalDateTime dateValue = parseDateTime(parts[1].trim());
+            return new UpdateCommandData(index, "from", dateValue);
+        } else if (content.contains(" /to ")) {
+            String[] parts = content.split(" /to ", 2);
+            if (parts.length < 2 || parts[1].trim().isEmpty()) {
+                throw new LyraException("Please provide a date after /to (e.g., 2/12/2024 1800)");
+            }
+            int index = parseUpdateIndex(parts[0].trim());
+            LocalDateTime dateValue = parseDateTime(parts[1].trim());
+            return new UpdateCommandData(index, "to", dateValue);
+        } else {
+            throw new LyraException("Invalid update format. Use: update <index> /description <new desc> "
+                    + "or update <index> /by <date> (for deadlines) or update <index> /from <date> "
+                    + "or update <index> /to <date> (for events).");
+        }
+    }
+
+    /**
+     * Parses the index from the first part of an update command (e.g., "1" -> 0).
+     */
+    private int parseUpdateIndex(String indexPart) throws LyraException {
+        try {
+            int userIndex = Integer.parseInt(indexPart);
+            if (userIndex < 1) {
+                throw new LyraException("Task number must be at least 1.");
+            }
+            return userIndex - 1;
+        } catch (NumberFormatException e) {
+            throw new LyraException("That's not a valid number! Please use digits (e.g., 1, 2, 3).");
+        }
+    }
 }

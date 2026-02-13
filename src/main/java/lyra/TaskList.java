@@ -136,4 +136,47 @@ public class TaskList {
                 .filter(task -> task.getType() == type)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
+
+    /**
+     * Updates a task at the specified index based on the update command data.
+     *
+     * @param data The parsed update command data
+     * @return The updated task
+     * @throws LyraException If the index is invalid or update type is incompatible with task type
+     */
+    public Task updateTask(UpdateCommandData data) throws LyraException {
+        validateIndex(data.getIndex());
+        Task task = this.tasks.get(data.getIndex());
+
+        String updateType = data.getUpdateType();
+        switch (updateType) {
+        case "description":
+            task.setDescription(data.getDescriptionValue());
+            break;
+        case "by":
+            if (!(task instanceof Deadline)) {
+                throw new LyraException("/by can only be used with deadline tasks!");
+            }
+            Deadline deadline = (Deadline) task;
+            deadline.setBy(data.getDateValue());
+            break;
+        case "from":
+            if (!(task instanceof Event)) {
+                throw new LyraException("/from can only be used with event tasks!");
+            }
+            Event eventFrom = (Event) task;
+            eventFrom.setFrom(data.getDateValue());
+            break;
+        case "to":
+            if (!(task instanceof Event)) {
+                throw new LyraException("/to can only be used with event tasks!");
+            }
+            Event eventTo = (Event) task;
+            eventTo.setTo(data.getDateValue());
+            break;
+        default:
+            throw new LyraException("Invalid update type: " + updateType);
+        }
+        return task;
+    }
 }

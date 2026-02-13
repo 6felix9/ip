@@ -51,6 +51,15 @@ public class Task {
     }
 
     /**
+     * Set the description.
+     *
+     * @param description The new description
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
      * Mark the task as done.
      */
     public void markDone() {

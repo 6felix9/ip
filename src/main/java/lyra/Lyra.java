@@ -85,6 +85,9 @@ public class Lyra {
         case FIND:
             return handleFindCommand(fullCommand);
 
+        case UPDATE:
+            return handleUpdateCommand(fullCommand);
+
         default:
             throw new LyraException("I'm sorry, but I don't know what that means :-(");
         }
@@ -204,6 +207,20 @@ public class Lyra {
         TaskType typeToFind = parser.parseTaskType(fullCommand);
         ArrayList<Task> foundTasks = taskList.findTasks(typeToFind);
         return ui.getFoundTasksMessage(foundTasks);
+    }
+
+    /**
+     * Handles the UPDATE command.
+     *
+     * @param fullCommand The full command string
+     * @return The response message
+     * @throws LyraException If the command execution fails
+     */
+    private String handleUpdateCommand(String fullCommand) throws LyraException {
+        UpdateCommandData data = parser.parseUpdateCommand(fullCommand);
+        Task updatedTask = taskList.updateTask(data);
+        saveTasks();
+        return ui.getUpdatedTaskMessage(updatedTask);
     }
 
     /**

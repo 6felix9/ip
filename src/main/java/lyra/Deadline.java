@@ -31,6 +31,15 @@ public class Deadline extends Task {
     }
 
     /**
+     * Set the by date and time.
+     *
+     * @param by The new due date
+     */
+    public void setBy(LocalDateTime by) {
+        this.by = by;
+    }
+
+    /**
      * Convert the Deadline object to a string for file storage.
      */
     @Override
