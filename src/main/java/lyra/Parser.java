@@ -8,6 +8,9 @@ import java.time.format.DateTimeParseException;
  * Parses user input into commands and task objects.
  */
 public class Parser {
+    private static final String[] UPDATE_DELIMITERS = {" /description ", " /by ", " /from ", " /to "};
+    private static final String[] UPDATE_TYPES = {"description", "by", "from", "to"};
+
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/MM/yyyy HHmm");
 
     /**
@@ -176,42 +179,42 @@ public class Parser {
             throw new LyraException("Please specify a task number and update type (e.g., /description or /by).");
         }
 
-        if (content.contains(" /description ")) {
-            String[] parts = content.split(" /description ", 2);
-            if (parts.length < 2 || parts[1].trim().isEmpty()) {
-                throw new LyraException("Please provide a new description after /description");
+        for (int i = 0; i < UPDATE_DELIMITERS.length; i++) {
+            String delimiter = UPDATE_DELIMITERS[i];
+            String updateType = UPDATE_TYPES[i];
+            if (content.contains(delimiter)) {
+                return parseUpdateWithDelimiter(content, delimiter, updateType);
             }
-            int index = parseUpdateIndex(parts[0].trim());
-            return new UpdateCommandData(index, parts[1].trim());
-        } else if (content.contains(" /by ")) {
-            String[] parts = content.split(" /by ", 2);
-            if (parts.length < 2 || parts[1].trim().isEmpty()) {
-                throw new LyraException("Please provide a date after /by (e.g., 2/12/2024 1800)");
-            }
-            int index = parseUpdateIndex(parts[0].trim());
-            LocalDateTime dateValue = parseDateTime(parts[1].trim());
-            return new UpdateCommandData(index, "by", dateValue);
-        } else if (content.contains(" /from ")) {
-            String[] parts = content.split(" /from ", 2);
-            if (parts.length < 2 || parts[1].trim().isEmpty()) {
-                throw new LyraException("Please provide a date after /from (e.g., 2/12/2024 1800)");
-            }
-            int index = parseUpdateIndex(parts[0].trim());
-            LocalDateTime dateValue = parseDateTime(parts[1].trim());
-            return new UpdateCommandData(index, "from", dateValue);
-        } else if (content.contains(" /to ")) {
-            String[] parts = content.split(" /to ", 2);
-            if (parts.length < 2 || parts[1].trim().isEmpty()) {
-                throw new LyraException("Please provide a date after /to (e.g., 2/12/2024 1800)");
-            }
-            int index = parseUpdateIndex(parts[0].trim());
-            LocalDateTime dateValue = parseDateTime(parts[1].trim());
-            return new UpdateCommandData(index, "to", dateValue);
-        } else {
-            throw new LyraException("Invalid update format. Use: update <index> /description <new desc> "
-                    + "or update <index> /by <date> (for deadlines) or update <index> /from <date> "
-                    + "or update <index> /to <date> (for events).");
         }
+        throw new LyraException("Invalid update format. Use: update <index> /description <new desc> "
+                + "or update <index> /by <date> (for deadlines) or update <index> /from <date> "
+                + "or update <index> /to <date> (for events).");
+    }
+
+    /**
+     * Parses a single update type from content using the given delimiter.
+     *
+     * @param content The content after "update" keyword
+     * @param delimiter The delimiter to split by (e.g., " /description ")
+     * @param updateType The update type (e.g., "description", "by", "from", "to")
+     * @return UpdateCommandData with parsed index and value
+     * @throws LyraException If the format is invalid
+     */
+    private UpdateCommandData parseUpdateWithDelimiter(String content, String delimiter, String updateType)
+            throws LyraException {
+        String[] parts = content.split(delimiter, 2);
+        if (parts.length < 2 || parts[1].trim().isEmpty()) {
+            String hint = "description".equals(updateType)
+                    ? "Please provide a new description after /description"
+                    : "Please provide a date after " + delimiter.trim() + " (e.g., 2/12/2024 1800)";
+            throw new LyraException(hint);
+        }
+        int index = parseUpdateIndex(parts[0].trim());
+        if ("description".equals(updateType)) {
+            return new UpdateCommandData(index, parts[1].trim());
+        }
+        LocalDateTime dateValue = parseDateTime(parts[1].trim());
+        return new UpdateCommandData(index, updateType, dateValue);
     }
 
     /**
