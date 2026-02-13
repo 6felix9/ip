@@ -58,9 +58,14 @@ public class Storage {
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine();
                 String[] parts = line.split(" \\| ");
+                // Assertion: File format assumes at least task type and status marker
+                assert parts.length >= 2 : "File line must have at least task type and status";
+                int sizeBeforeAdd = tasks.size();
                 Task task = createTaskFromParts(parts);
                 markTaskIfDone(task, parts[1]);
                 tasks.add(task);
+                // Assertion: Task was successfully added to list (size should increase by 1)
+                assert tasks.size() == sizeBeforeAdd + 1 : "Task should be added to list";
             }
             return tasks;
         } catch (FileNotFoundException e) {
@@ -78,10 +83,17 @@ public class Storage {
     private Task createTaskFromParts(String[] parts) throws LyraException {
         switch (parts[0]) {
         case TASK_TYPE_TODO:
+            // Assertion: Todo format assumes: T | status | description
+            assert parts.length >= 3 : "Todo line must have type, status, and description";
             return new Todo(parts[2]);
         case TASK_TYPE_DEADLINE:
+            // Assertion: Deadline format assumes: D | status | description | datetime
+            assert parts.length >= 4 : "Deadline line must have type, status, description, and datetime";
             return new Deadline(parts[2], parseDateTime(parts[3]));
         case TASK_TYPE_EVENT:
+            // Assertion: Event format assumes: E | status | description | start | end
+            assert parts.length >= 5
+                    : "Event line must have type, status, description, start, and end datetime";
             return new Event(parts[2], parseDateTime(parts[3]), parseDateTime(parts[4]));
         default:
             throw new LyraException("Invalid task type in file.");

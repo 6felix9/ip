@@ -1,6 +1,7 @@
 package lyra;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Manages a list of tasks.
@@ -50,7 +51,12 @@ public class TaskList {
      */
     public Task removeTask(int index) throws LyraException {
         validateIndex(index);
-        return this.tasks.remove(index);
+        // Assertion: After validation, index must be within valid range
+        assert index >= 0 && index < this.tasks.size() : "Index must be valid after bounds check";
+        Task removed = this.tasks.remove(index);
+        // Assertion: Removed task should not be null (tasks list should not contain nulls)
+        assert removed != null : "Removed task should not be null";
+        return removed;
     }
 
     /**
@@ -88,8 +94,15 @@ public class TaskList {
      */
     public Task markTask(int index) throws LyraException {
         validateIndex(index);
-        this.tasks.get(index).markDone();
-        return this.tasks.get(index);
+        // Assertion: After validation, index must be within valid range
+        assert index >= 0 && index < this.tasks.size() : "Index must be valid after bounds check";
+        Task task = this.tasks.get(index);
+        // Assertion: Task at index should not be null
+        assert task != null : "Task at index should not be null";
+        task.markDone();
+        // Assertion: After marking, task should be done
+        assert task.getIsDone() : "Task should be marked as done after markDone()";
+        return task;
     }
 
     /**
@@ -101,8 +114,15 @@ public class TaskList {
      */
     public Task unmarkTask(int index) throws LyraException {
         validateIndex(index);
-        this.tasks.get(index).unmarkDone();
-        return this.tasks.get(index);
+        // Assertion: After validation, index must be within valid range
+        assert index >= 0 && index < this.tasks.size() : "Index must be valid after bounds check";
+        Task task = this.tasks.get(index);
+        // Assertion: Task at index should not be null
+        assert task != null : "Task at index should not be null";
+        task.unmarkDone();
+        // Assertion: After unmarking, task should not be done
+        assert !task.getIsDone() : "Task should be marked as not done after unmarkDone()";
+        return task;
     }
 
     /**
@@ -112,12 +132,8 @@ public class TaskList {
      * @return A list of matching tasks
      */
     public ArrayList<Task> findTasks(TaskType type) {
-        ArrayList<Task> foundTasks = new ArrayList<>();
-        for (Task task : this.tasks) {
-            if (task.getType() == type) {
-                foundTasks.add(task);
-            }
-        }
-        return foundTasks;
+        return this.tasks.stream()
+                .filter(task -> task.getType() == type)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }
