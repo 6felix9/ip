@@ -48,11 +48,9 @@ public class Parser {
      * @return A Todo object
      */
     public Todo parseTodo(String command) {
-        // Assertion: Command should contain a space (assumes format: "todo <description>")
-        assert command.contains(" ") : "Todo command must contain a space separator";
         int spaceIndex = command.indexOf(" ");
-        // Assertion: Space index should be valid (not -1)
-        assert spaceIndex >= 0 : "Space separator must exist in command";
+        // Assertion: After finding space index, it should be valid (assumes format: "todo <description>")
+        assert spaceIndex >= 0 : "Todo command must contain a space separator";
         String description = command.substring(spaceIndex + 1);
         // Assertion: Description should not be empty after parsing
         assert !description.isEmpty() : "Todo description should not be empty";

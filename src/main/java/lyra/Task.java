@@ -55,6 +55,8 @@ public class Task {
      */
     public void markDone() {
         this.isDone = true;
+        // Assertion: After marking, task should be done
+        assert this.isDone : "Task should be marked as done after markDone()";
     }
 
     /**
@@ -62,6 +64,8 @@ public class Task {
      */
     public void unmarkDone() {
         this.isDone = false;
+        // Assertion: After unmarking, task should not be done
+        assert !this.isDone : "Task should be marked as not done after unmarkDone()";
     }
 
     /**
