@@ -16,7 +16,7 @@ public class UpdateCommandData {
      */
     public UpdateCommandData(int index, String descriptionValue) {
         this.index = index;
-        this.updateType = "description";
+        this.updateType = UpdateType.DESCRIPTION;
         this.descriptionValue = descriptionValue;
         this.dateValue = null;
     }

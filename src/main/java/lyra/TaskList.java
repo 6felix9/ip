@@ -150,24 +150,24 @@ public class TaskList {
 
         String updateType = data.getUpdateType();
         switch (updateType) {
-        case "description":
+        case UpdateType.DESCRIPTION:
             task.setDescription(data.getDescriptionValue());
             break;
-        case "by":
+        case UpdateType.BY:
             if (!(task instanceof Deadline)) {
                 throw new LyraException("/by can only be used with deadline tasks!");
             }
             Deadline deadline = (Deadline) task;
             deadline.setBy(data.getDateValue());
             break;
-        case "from":
+        case UpdateType.FROM:
             if (!(task instanceof Event)) {
                 throw new LyraException("/from can only be used with event tasks!");
             }
             Event eventFrom = (Event) task;
             eventFrom.setFrom(data.getDateValue());
             break;
-        case "to":
+        case UpdateType.TO:
             if (!(task instanceof Event)) {
                 throw new LyraException("/to can only be used with event tasks!");
             }

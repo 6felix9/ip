@@ -9,7 +9,9 @@ import java.time.format.DateTimeParseException;
  */
 public class Parser {
     private static final String[] UPDATE_DELIMITERS = {" /description ", " /by ", " /from ", " /to "};
-    private static final String[] UPDATE_TYPES = {"description", "by", "from", "to"};
+    private static final String[] UPDATE_TYPES = {
+        UpdateType.DESCRIPTION, UpdateType.BY, UpdateType.FROM, UpdateType.TO
+    };
 
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/MM/yyyy HHmm");
 
@@ -204,13 +206,13 @@ public class Parser {
             throws LyraException {
         String[] parts = content.split(delimiter, 2);
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
-            String hint = "description".equals(updateType)
+            String hint = UpdateType.DESCRIPTION.equals(updateType)
                     ? "Please provide a new description after /description"
                     : "Please provide a date after " + delimiter.trim() + " (e.g., 2/12/2024 1800)";
             throw new LyraException(hint);
         }
         int index = parseUpdateIndex(parts[0].trim());
-        if ("description".equals(updateType)) {
+        if (UpdateType.DESCRIPTION.equals(updateType)) {
             return new UpdateCommandData(index, parts[1].trim());
         }
         LocalDateTime dateValue = parseDateTime(parts[1].trim());
