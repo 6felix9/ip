@@ -40,7 +40,12 @@ public class TaskList {
         if (index < 0 || index >= this.tasks.size()) {
             throw new LyraException("Invalid task number: %d", index + 1);
         }
-        return this.tasks.remove(index);
+        // Assertion: After validation, index must be within valid range
+        assert index >= 0 && index < this.tasks.size() : "Index must be valid after bounds check";
+        Task removed = this.tasks.remove(index);
+        // Assertion: Removed task should not be null (tasks list should not contain nulls)
+        assert removed != null : "Removed task should not be null";
+        return removed;
     }
 
     /**
@@ -75,8 +80,15 @@ public class TaskList {
         if (index < 0 || index >= this.tasks.size()) {
             throw new LyraException("Invalid task number: %d", index + 1);
         }
-        this.tasks.get(index).markDone();
-        return this.tasks.get(index);
+        // Assertion: After validation, index must be within valid range
+        assert index >= 0 && index < this.tasks.size() : "Index must be valid after bounds check";
+        Task task = this.tasks.get(index);
+        // Assertion: Task at index should not be null
+        assert task != null : "Task at index should not be null";
+        task.markDone();
+        // Assertion: After marking, task should be done
+        assert task.getIsDone() : "Task should be marked as done after markDone()";
+        return task;
     }
 
     /**

@@ -57,24 +57,39 @@ public class Storage {
                 String line = fileScanner.nextLine();
                 String[] parts = line.split(" \\| ");
 
+                // Assertion: File format assumes at least task type and status marker
+                assert parts.length >= 2 : "File line must have at least task type and status";
+
                 switch (parts[0]) {
                 case "T":
+                    // Assertion: Todo format assumes: T | status | description
+                    assert parts.length >= 3 : "Todo line must have type, status, and description";
                     tasks.add(new Todo(parts[2]));
                     if (parts[1].equals(DONE_MARKER)) {
                         tasks.get(tasks.size() - 1).markDone();
                     }
+                    // Assertion: Task was successfully added to list
+                    assert tasks.size() > 0 : "Task should be added to list";
                     break;
                 case "D":
+                    // Assertion: Deadline format assumes: D | status | description | datetime
+                    assert parts.length >= 4 : "Deadline line must have type, status, description, and datetime";
                     tasks.add(new Deadline(parts[2], parseDateTime(parts[3])));
                     if (parts[1].equals(DONE_MARKER)) {
                         tasks.get(tasks.size() - 1).markDone();
                     }
+                    // Assertion: Task was successfully added to list
+                    assert tasks.size() > 0 : "Task should be added to list";
                     break;
                 case "E":
+                    // Assertion: Event format assumes: E | status | description | start | end
+                    assert parts.length >= 5 : "Event line must have type, status, description, start, and end datetime";
                     tasks.add(new Event(parts[2], parseDateTime(parts[3]), parseDateTime(parts[4])));
                     if (parts[1].equals(DONE_MARKER)) {
                         tasks.get(tasks.size() - 1).markDone();
                     }
+                    // Assertion: Task was successfully added to list
+                    assert tasks.size() > 0 : "Task should be added to list";
                     break;
                 default:
                     throw new LyraException("Invalid task type in file.");

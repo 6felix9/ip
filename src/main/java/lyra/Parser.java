@@ -48,8 +48,18 @@ public class Parser {
      * @return A Todo object
      */
     public Todo parseTodo(String command) {
-        String description = command.substring(command.indexOf(" ") + 1);
-        return new Todo(description);
+        // Assertion: Command should contain a space (assumes format: "todo <description>")
+        assert command.contains(" ") : "Todo command must contain a space separator";
+        int spaceIndex = command.indexOf(" ");
+        // Assertion: Space index should be valid (not -1)
+        assert spaceIndex >= 0 : "Space separator must exist in command";
+        String description = command.substring(spaceIndex + 1);
+        // Assertion: Description should not be empty after parsing
+        assert !description.isEmpty() : "Todo description should not be empty";
+        Todo todo = new Todo(description);
+        // Assertion: Created todo should not be null
+        assert todo != null : "Created Todo should not be null";
+        return todo;
     }
 
     /**
@@ -69,8 +79,17 @@ public class Parser {
             throw new LyraException("A deadline must have a /by time!");
         }
 
+        // Assertion: After validation, parts array should have exactly 2 elements
+        assert parts.length == 2 : "Parts array should have description and time after split";
+        // Assertion: Description and time should not be empty
+        assert !parts[0].isEmpty() : "Deadline description should not be empty";
+        assert !parts[1].isEmpty() : "Deadline time should not be empty";
+
         // 3. Return the Deadline object
-        return new Deadline(parts[0], parseDateTime(parts[1]));
+        Deadline deadline = new Deadline(parts[0], parseDateTime(parts[1]));
+        // Assertion: Created deadline should not be null
+        assert deadline != null : "Created Deadline should not be null";
+        return deadline;
     }
 
     /**
