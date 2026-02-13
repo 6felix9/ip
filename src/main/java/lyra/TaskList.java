@@ -1,6 +1,7 @@
 package lyra;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Manages a list of tasks.
@@ -102,8 +103,15 @@ public class TaskList {
         if (index < 0 || index >= this.tasks.size()) {
             throw new LyraException("Invalid task number!");
         }
-        this.tasks.get(index).unmarkDone();
-        return this.tasks.get(index);
+        // Assertion: After validation, index must be within valid range
+        assert index >= 0 && index < this.tasks.size() : "Index must be valid after bounds check";
+        Task task = this.tasks.get(index);
+        // Assertion: Task at index should not be null
+        assert task != null : "Task at index should not be null";
+        task.unmarkDone();
+        // Assertion: After unmarking, task should not be done
+        assert !task.getIsDone() : "Task should be marked as not done after unmarkDone()";
+        return task;
     }
 
     /**
@@ -113,12 +121,8 @@ public class TaskList {
      * @return A list of matching tasks
      */
     public ArrayList<Task> findTasks(TaskType type) {
-        ArrayList<Task> foundTasks = new ArrayList<>();
-        for (Task task : this.tasks) {
-            if (task.getType() == type) {
-                foundTasks.add(task);
-            }
-        }
-        return foundTasks;
+        return this.tasks.stream()
+                .filter(task -> task.getType() == type)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }
