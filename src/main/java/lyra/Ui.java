@@ -249,4 +249,13 @@ public class Ui {
         }
         System.out.println(separator);
     }
+
+    /**
+     * Displays a message with formatting for CLI mode.
+     *
+     * @param message The message to display
+     */
+    public void displayMessage(String message) {
+        prettyPrint(message);
+    }
 }
