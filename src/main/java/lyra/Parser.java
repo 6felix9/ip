@@ -26,7 +26,8 @@ public class Parser {
         try {
             return LocalDateTime.parse(input, dateTimeFormatter);
         } catch (DateTimeParseException e) {
-            throw new LyraException("Invalid format. Use: d/MM/yyyy HHmm (e.g., 2/12/2024 1800)");
+            throw new LyraException("That date format doesn't look right. Please use d/MM/yyyy HHmm "
+                    + "— for example: 2/12/2024 1800.");
         }
     }
 
@@ -42,7 +43,8 @@ public class Parser {
             String commandWord = command.trim().split(" ")[0].toUpperCase();
             return Command.valueOf(commandWord);
         } catch (IllegalArgumentException e) {
-            throw new LyraException("I'm sorry, but I don't know what that means :-(");
+            throw new LyraException("I'm not sure what you mean. Try: todo, deadline, event, list, "
+                    + "mark, unmark, delete, find, update, or bye.");
         }
     }
 
@@ -79,7 +81,8 @@ public class Parser {
         String[] parts = content.split(" /by ", 2);
 
         if (parts.length < 2) {
-            throw new LyraException("A deadline must have a /by time!");
+            throw new LyraException("A deadline needs a due time — add /by followed by the date "
+                    + "(e.g., deadline return book /by 2/12/2024 1800).");
         }
 
         // Assertion: After validation, parts array should have exactly 2 elements
@@ -108,13 +111,13 @@ public class Parser {
         // 2. Split by the delimiter
         String[] firstSplit = content.split(" /from ", 2);
         if (firstSplit.length < 2) {
-            throw new LyraException("Event needs /from!");
+            throw new LyraException("An event needs a start time — please include /from followed by the date.");
         }
 
         // 3. Split by the delimiter
         String[] secondSplit = firstSplit[1].split(" /to ", 2);
         if (secondSplit.length < 2) {
-            throw new LyraException("Event needs /to!");
+            throw new LyraException("An event also needs an end time — please include /to followed by the date.");
         }
 
         // 4. Return the Event object
@@ -134,7 +137,7 @@ public class Parser {
 
             // 2. Check if the user actually provided a number
             if (parts.length < 2) {
-                throw new LyraException("Please specify a task number!");
+                throw new LyraException("Could you include a task number? For example: mark 2.");
             }
 
             // 3. Parse the string to an int
@@ -144,7 +147,7 @@ public class Parser {
             return userIndex - 1;
 
         } catch (NumberFormatException e) {
-            throw new LyraException("That's not a valid number! Please use digits (e.g., 1, 2, 3).");
+            throw new LyraException("That doesn't look like a number. Please use digits, like: mark 2.");
         }
     }
 
@@ -159,11 +162,12 @@ public class Parser {
         try {
             String[] parts = input.split(" ");
             if (parts.length < 2) {
-                throw new LyraException("Please specify a task type (todo, deadline, or event).");
+                throw new LyraException("Which type would you like to find? Try: find todo, "
+                        + "find deadline, or find event.");
             }
             return TaskType.valueOf(parts[1].toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new LyraException("Invalid task type! Please use: todo, deadline, event.");
+            throw new LyraException("I don't recognise that task type. Please use one of: todo, deadline, or event.");
         }
     }
 
@@ -178,7 +182,8 @@ public class Parser {
     public UpdateCommandData parseUpdateCommand(String command) throws LyraException {
         String content = command.substring("update".length()).trim();
         if (content.isEmpty()) {
-            throw new LyraException("Please specify a task number and update type (e.g., /description or /by).");
+            throw new LyraException("To update a task, include the task number and what to change "
+                    + "— e.g., update 1 /description new title.");
         }
 
         for (int i = 0; i < UPDATE_DELIMITERS.length; i++) {
@@ -188,9 +193,8 @@ public class Parser {
                 return parseUpdateWithDelimiter(content, delimiter, updateType);
             }
         }
-        throw new LyraException("Invalid update format. Use: update <index> /description <new desc> "
-                + "or update <index> /by <date> (for deadlines) or update <index> /from <date> "
-                + "or update <index> /to <date> (for events).");
+        throw new LyraException("I couldn't parse that update. Use: update <number> /description <text>, "
+                + "or /by, /from, /to with a date.");
     }
 
     /**
@@ -207,8 +211,8 @@ public class Parser {
         String[] parts = content.split(delimiter, 2);
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
             String hint = UpdateType.DESCRIPTION.equals(updateType)
-                    ? "Please provide a new description after /description"
-                    : "Please provide a date after " + delimiter.trim() + " (e.g., 2/12/2024 1800)";
+                    ? "What's the new description? Try: update 1 /description your new task name."
+                    : "I need a date after " + delimiter.trim() + ". For example: 2/12/2024 1800.";
             throw new LyraException(hint);
         }
         int index = parseUpdateIndex(parts[0].trim());
@@ -226,11 +230,12 @@ public class Parser {
         try {
             int userIndex = Integer.parseInt(indexPart);
             if (userIndex < 1) {
-                throw new LyraException("Task number must be at least 1.");
+                throw new LyraException("Task numbers start from 1 — please use a number like 1, 2, or 3.");
             }
             return userIndex - 1;
         } catch (NumberFormatException e) {
-            throw new LyraException("That's not a valid number! Please use digits (e.g., 1, 2, 3).");
+            throw new LyraException("That doesn't look like a number. Please use digits, "
+                    + "like: update 2 /description new title.");
         }
     }
 }

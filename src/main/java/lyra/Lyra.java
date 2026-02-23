@@ -127,7 +127,8 @@ public class Lyra {
             return handleUpdateCommand(fullCommand);
 
         default:
-            throw new LyraException("I'm sorry, but I don't know what that means :-(");
+            throw new LyraException("I'm not sure what you mean. Try: todo, deadline, event, list, "
+                    + "mark, unmark, delete, find, update, or bye.");
         }
     }
 

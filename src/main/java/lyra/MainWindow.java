@@ -52,7 +52,7 @@ public class MainWindow extends AnchorPane {
      * Displays the welcome message.
      */
     private void showWelcome() {
-        String welcomeText = "Hello! I'm Lyra\nWhat can I do for you?";
+        String welcomeText = "Hi there! I'm Lyra, your personal task helper.\nWhat would you like to get done today?";
         dialogContainer.getChildren().add(DialogBox.getLyraDialog(welcomeText, botImage));
     }
 

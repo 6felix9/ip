@@ -42,7 +42,8 @@ public class Storage {
                     DateTimeFormatter.ofPattern("d/MM/yyyy HHmm");
             return LocalDateTime.parse(input, formatter);
         } catch (DateTimeParseException e) {
-            throw new LyraException("Invalid format. Use: d/MM/yyyy HHmm (e.g., 2/12/2024 1800)");
+            throw new LyraException("That date format doesn't look right. Please use d/MM/yyyy HHmm "
+                    + "— for example: 2/12/2024 1800.");
         }
     }
 
@@ -96,7 +97,8 @@ public class Storage {
                     : "Event line must have type, status, description, start, and end datetime";
             return new Event(parts[2], parseDateTime(parts[3]), parseDateTime(parts[4]));
         default:
-            throw new LyraException("Invalid task type in file.");
+            throw new LyraException("I don't recognise that task type in your data file. "
+                    + "Please use one of: todo, deadline, or event.");
         }
     }
 

@@ -38,7 +38,7 @@ public class TaskList {
      */
     private void validateIndex(int index) throws LyraException {
         if (index < 0 || index >= this.tasks.size()) {
-            throw new LyraException("Invalid task number!");
+            throw new LyraException("I couldn't find a task with that number. Use list to see all your tasks.");
         }
     }
 
@@ -155,27 +155,27 @@ public class TaskList {
             break;
         case UpdateType.BY:
             if (!(task instanceof Deadline)) {
-                throw new LyraException("/by can only be used with deadline tasks!");
+                throw new LyraException("/by only works with deadline tasks. Check your task type with list.");
             }
             Deadline deadline = (Deadline) task;
             deadline.setBy(data.getDateValue());
             break;
         case UpdateType.FROM:
             if (!(task instanceof Event)) {
-                throw new LyraException("/from can only be used with event tasks!");
+                throw new LyraException("/from only works with event tasks. Check your task type with list.");
             }
             Event eventFrom = (Event) task;
             eventFrom.setFrom(data.getDateValue());
             break;
         case UpdateType.TO:
             if (!(task instanceof Event)) {
-                throw new LyraException("/to can only be used with event tasks!");
+                throw new LyraException("/to only works with event tasks. Check your task type with list.");
             }
             Event eventTo = (Event) task;
             eventTo.setTo(data.getDateValue());
             break;
         default:
-            throw new LyraException("Invalid update type: " + updateType);
+            throw new LyraException("Hmm, I don't recognise that update type: " + updateType + ".");
         }
         return task;
     }

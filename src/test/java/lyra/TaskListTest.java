@@ -13,7 +13,7 @@ public class TaskListTest {
             tasks.removeTask(0); // empty list
             fail();
         } catch (LyraException e) {
-            assertEquals("Invalid task number!", e.getMessage());
+            assertEquals("I couldn't find a task with that number. Use list to see all your tasks.", e.getMessage());
         }
     }
 }

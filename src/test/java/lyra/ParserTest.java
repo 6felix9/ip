@@ -19,7 +19,8 @@ public class ParserTest {
             new Parser().getCommand("invalid");
             fail(); // the test should not reach this line
         } catch (LyraException e) {
-            assertEquals("I'm sorry, but I don't know what that means :-(", e.getMessage());
+            assertEquals("I'm not sure what you mean. Try: todo, deadline, event, list, "
+                    + "mark, unmark, delete, find, update, or bye.", e.getMessage());
         }
     }
 }

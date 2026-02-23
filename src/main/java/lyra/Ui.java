@@ -62,6 +62,9 @@ public class Ui {
      * @throws LyraException If the task list contains invalid data
      */
     public String getAllTasksMessage(TaskList taskList) throws LyraException {
+        if (taskList.getSize() == 0) {
+            return "Your list is clear right now — you're all caught up!";
+        }
         String listString = "Here are the tasks in your list:\n";
         for (int i = 0; i < taskList.getSize(); i++) {
             Task task = taskList.getTask(i);
@@ -86,7 +89,7 @@ public class Ui {
      * @return Formatted message string
      */
     public String getMarkedMessage(Task task) {
-        return "Great! I've marked this task as done:\n" + task.toString();
+        return "Well done! I've marked this as complete:\n" + task.toString();
     }
 
     /**
@@ -105,7 +108,7 @@ public class Ui {
      * @return Formatted message string
      */
     public String getUnmarkedMessage(Task task) {
-        return "OK, I've marked this task as not done yet:\n" + task.toString();
+        return "No worries — I've moved that back to your to-do list:\n" + task.toString();
     }
 
     /**
@@ -115,7 +118,7 @@ public class Ui {
      * @return Formatted message string
      */
     public String getUpdatedTaskMessage(Task task) {
-        return "Got it. I've updated this task:\n" + task.toString();
+        return "All set! Here's the updated task:\n" + task.toString();
     }
 
     /**
@@ -152,7 +155,7 @@ public class Ui {
      * @return Formatted message string
      */
     public String getAddedTaskMessage(Task task) {
-        return "Got it. I've added this task:\n" + task.toString();
+        return "Added! Here's what I've put down for you:\n" + task.toString();
     }
 
     /**
@@ -171,7 +174,7 @@ public class Ui {
      * @return Formatted message string
      */
     public String getRemovedTaskMessage(Task task) {
-        return "Okay. I've removed this task:\n" + task.toString();
+        return "Done — I've removed that from your list:\n" + task.toString();
     }
 
     /**
@@ -191,7 +194,7 @@ public class Ui {
      */
     public String getFoundTasksMessage(ArrayList<Task> foundTasks) {
         if (foundTasks.isEmpty()) {
-            return "No matching tasks found.";
+            return "I couldn't find any tasks of that type. Try a different type?";
         }
         String findString = "Here are the matching tasks in your list:\n";
         for (int i = 0; i < foundTasks.size(); i++) {
@@ -213,7 +216,7 @@ public class Ui {
      * @return Welcome message string
      */
     public String getWelcomeMessage() {
-        return "Hello! I'm Lyra\nWhat can I do for you?";
+        return "Hi there! I'm Lyra, your personal task helper.\nWhat would you like to get done today?";
     }
 
     /**
@@ -229,7 +232,7 @@ public class Ui {
      * @return Goodbye message string
      */
     public String getGoodbyeMessage() {
-        return "Bye. Hope to see you again soon!";
+        return "Take care! I'm here whenever you need me.";
     }
 
     /**
@@ -248,7 +251,7 @@ public class Ui {
      * @return Formatted error message string
      */
     public String getErrorMessage(String errorMessage) {
-        return "Oh No!!! " + errorMessage;
+        return "Oops! " + errorMessage;
     }
 
     /**
