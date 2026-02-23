@@ -105,8 +105,7 @@ public class ParserTest {
 
     @Test
     public void parseDeadline_missingByClause_exceptionThrown() {
-        LyraException e = assertThrows(LyraException.class,
-                () -> parser.parseDeadline("deadline return book"));
+        LyraException e = assertThrows(LyraException.class, () -> parser.parseDeadline("deadline return book"));
         assertEquals("A deadline needs a due time — add /by followed by the date "
                 + "(e.g., deadline return book /by 2/12/2024 1800).", e.getMessage());
     }
@@ -114,30 +113,27 @@ public class ParserTest {
     @Test
     public void parseDeadline_emptyDescription_exceptionThrown() {
         // Two spaces after "deadline" so the parser finds " /by " but the description part is empty
-        LyraException e = assertThrows(LyraException.class,
-                () -> parser.parseDeadline("deadline  /by 2/12/2024 1800"));
+        LyraException e = assertThrows(LyraException.class, () -> parser.parseDeadline("deadline  /by 2/12/2024 1800"));
         assertEquals("A deadline needs a description. Try: deadline return book /by 2/12/2024 1800.",
                 e.getMessage());
     }
 
     @Test
     public void parseDeadline_emptyTime_exceptionThrown() {
-        assertThrows(LyraException.class,
-                () -> parser.parseDeadline("deadline return book /by "));
+        assertThrows(LyraException.class, () -> parser.parseDeadline("deadline return book /by "));
     }
 
     @Test
     public void parseDeadline_invalidDateFormat_exceptionThrown() {
-        LyraException e = assertThrows(LyraException.class,
-                () -> parser.parseDeadline("deadline return book /by 2024-12-02 18:00"));
+        LyraException e = assertThrows(LyraException.class, () -> parser.parseDeadline(
+                "deadline return book /by 2024-12-02 18:00"));
         assertEquals("That date format doesn't look right. Please use d/MM/yyyy HHmm "
                 + "— for example: 2/12/2024 1800.", e.getMessage());
     }
 
     @Test
     public void parseDeadline_pipeInDescription_exceptionThrown() {
-        assertThrows(LyraException.class,
-                () -> parser.parseDeadline("deadline return|book /by 2/12/2024 1800"));
+        assertThrows(LyraException.class, () -> parser.parseDeadline("deadline return|book /by 2/12/2024 1800"));
     }
 
     // -------------------------------------------------------------------------
@@ -154,16 +150,16 @@ public class ParserTest {
 
     @Test
     public void parseEvent_missingFrom_exceptionThrown() {
-        LyraException e = assertThrows(LyraException.class,
-                () -> parser.parseEvent("event meeting /to 2/12/2024 1200"));
+        LyraException e = assertThrows(LyraException.class, () -> parser.parseEvent(
+                "event meeting /to 2/12/2024 1200"));
         assertEquals("An event needs a start time — please include /from followed by the date.",
                 e.getMessage());
     }
 
     @Test
     public void parseEvent_missingTo_exceptionThrown() {
-        LyraException e = assertThrows(LyraException.class,
-                () -> parser.parseEvent("event meeting /from 2/12/2024 1000"));
+        LyraException e = assertThrows(LyraException.class, () -> parser.parseEvent(
+                "event meeting /from 2/12/2024 1000"));
         assertEquals("An event also needs an end time — please include /to followed by the date.",
                 e.getMessage());
     }
@@ -171,34 +167,34 @@ public class ParserTest {
     @Test
     public void parseEvent_emptyDescription_exceptionThrown() {
         // Two spaces after "event" so the parser finds " /from " but the description part is empty
-        LyraException e = assertThrows(LyraException.class,
-                () -> parser.parseEvent("event  /from 2/12/2024 1000 /to 2/12/2024 1200"));
+        LyraException e = assertThrows(LyraException.class, () -> parser.parseEvent(
+                "event  /from 2/12/2024 1000 /to 2/12/2024 1200"));
         assertEquals("An event needs a description. Try: event meeting "
                 + "/from 2/12/2024 1000 /to 2/12/2024 1200.", e.getMessage());
     }
 
     @Test
     public void parseEvent_startAfterEnd_exceptionThrown() {
-        assertThrows(LyraException.class,
-                () -> parser.parseEvent("event meeting /from 2/12/2024 1200 /to 2/12/2024 1000"));
+        assertThrows(LyraException.class, () -> parser.parseEvent(
+                "event meeting /from 2/12/2024 1200 /to 2/12/2024 1000"));
     }
 
     @Test
     public void parseEvent_startEqualsEnd_exceptionThrown() {
-        assertThrows(LyraException.class,
-                () -> parser.parseEvent("event meeting /from 2/12/2024 1000 /to 2/12/2024 1000"));
+        assertThrows(LyraException.class, () -> parser.parseEvent(
+                "event meeting /from 2/12/2024 1000 /to 2/12/2024 1000"));
     }
 
     @Test
     public void parseEvent_pipeInDescription_exceptionThrown() {
-        assertThrows(LyraException.class,
-                () -> parser.parseEvent("event team|meeting /from 2/12/2024 1000 /to 2/12/2024 1200"));
+        assertThrows(LyraException.class, () -> parser.parseEvent(
+                "event team|meeting /from 2/12/2024 1000 /to 2/12/2024 1200"));
     }
 
     @Test
     public void parseEvent_invalidFromDate_exceptionThrown() {
-        assertThrows(LyraException.class,
-                () -> parser.parseEvent("event meeting /from bad-date /to 2/12/2024 1200"));
+        assertThrows(LyraException.class, () -> parser.parseEvent(
+                "event meeting /from bad-date /to 2/12/2024 1200"));
     }
 
     // -------------------------------------------------------------------------
@@ -311,25 +307,21 @@ public class ParserTest {
 
     @Test
     public void parseUpdateCommand_nonNumericIndex_exceptionThrown() {
-        assertThrows(LyraException.class,
-                () -> parser.parseUpdateCommand("update abc /description new title"));
+        assertThrows(LyraException.class, () -> parser.parseUpdateCommand("update abc /description new title"));
     }
 
     @Test
     public void parseUpdateCommand_negativeIndex_exceptionThrown() {
-        assertThrows(LyraException.class,
-                () -> parser.parseUpdateCommand("update -1 /description new title"));
+        assertThrows(LyraException.class, () -> parser.parseUpdateCommand("update -1 /description new title"));
     }
 
     @Test
     public void parseUpdateCommand_emptyDescriptionValue_exceptionThrown() {
-        assertThrows(LyraException.class,
-                () -> parser.parseUpdateCommand("update 1 /description "));
+        assertThrows(LyraException.class, () -> parser.parseUpdateCommand("update 1 /description "));
     }
 
     @Test
     public void parseUpdateCommand_pipeInDescription_exceptionThrown() {
-        assertThrows(LyraException.class,
-                () -> parser.parseUpdateCommand("update 1 /description new|title"));
+        assertThrows(LyraException.class, () -> parser.parseUpdateCommand("update 1 /description new|title"));
     }
 }

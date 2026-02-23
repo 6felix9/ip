@@ -33,8 +33,7 @@ public class EventTest {
 
     @Test
     public void constructor_startAfterEnd_exceptionThrown() {
-        LyraException e = assertThrows(LyraException.class,
-                () -> new Event("meeting", TO, FROM));
+        LyraException e = assertThrows(LyraException.class, () -> new Event("meeting", TO, FROM));
         assertEquals("Start time must be before end time.", e.getMessage());
     }
 
