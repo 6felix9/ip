@@ -11,7 +11,7 @@
    <children>
       <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" prefHeight="550.0" prefWidth="400.0" vvalue="1.0">
          <content>
-            <VBox fx:id="dialogContainer" prefHeight="550.0" prefWidth="380.0" />
+            <VBox fx:id="dialogContainer" prefWidth="380.0" />
          </content>
       </ScrollPane>
       <TextField fx:id="userInput" layoutY="550.0" onAction="#handleUserInput" prefHeight="50.0" prefWidth="320.0" promptText="Enter command here..." AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />

@@ -1,5 +1,6 @@
 package lyra;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -31,9 +32,11 @@ public class MainWindow extends AnchorPane {
      */
     @FXML
     public void initialize() {
-        scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
         scrollPane.setFitToWidth(true);
+        dialogContainer.heightProperty().addListener((observable, oldValue, newValue) ->
+                Platform.runLater(() -> scrollPane.setVvalue(1.0)));
         showWelcome();
+        Platform.runLater(() -> scrollPane.setVvalue(1.0));
     }
 
     /**
