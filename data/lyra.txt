@@ -1,9 +1,6 @@
-T | 1 | hi
-T | 1 | todo
-T | 1 | list
-T | 0 | fkjdhgsakjlfhdsa
-T | 0 | list
-T | 0 | fjdskah
-T | 0 | mark
-T | 0 | hfdjsa
-T | 0 | fhdjsa /to hfdjksa
+T | 1 | reply to emails
+T | 0 | read chapter 5
+D | 1 | submit report | 15/03/2025 1700
+D | 0 | pay electricity bill | 28/02/2025 2359
+E | 0 | project review | 28/02/2025 1400 | 28/02/2025 1530
+T | 0 | drive to school
