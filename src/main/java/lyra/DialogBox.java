@@ -14,6 +14,13 @@ import javafx.scene.layout.HBox;
  * Represents a dialog box for chat messages.
  */
 public class DialogBox extends HBox {
+    private static final String BOT_STYLE = "-fx-background-color: #e8e8e8; -fx-background-radius: 12; "
+            + "-fx-text-fill: #1a1a1a; -fx-padding: 8 12 8 12;";
+    private static final String USER_STYLE = "-fx-background-color: #0078D4; -fx-background-radius: 12; "
+            + "-fx-text-fill: white; -fx-padding: 8 12 8 12;";
+    private static final String ERROR_STYLE = "-fx-background-color: #fde8e8; -fx-background-radius: 12; "
+            + "-fx-text-fill: #b00020; -fx-padding: 8 12 8 12;";
+
     @FXML
     private Label dialog;
     @FXML
@@ -40,7 +47,7 @@ public class DialogBox extends HBox {
     }
 
     /**
-     * Creates a user dialog box (text on left, image on right).
+     * Creates a user dialog box (text on left, avatar on right).
      *
      * @param text The user's message
      * @param img The user avatar image
@@ -49,6 +56,7 @@ public class DialogBox extends HBox {
     public static DialogBox getUserDialog(String text, Image img) {
         DialogBox db = new DialogBox(text, img);
         db.flip();
+        db.dialog.setStyle(USER_STYLE);
         return db;
     }
 
@@ -60,19 +68,21 @@ public class DialogBox extends HBox {
      * @return A DialogBox instance
      */
     public static DialogBox getLyraDialog(String text, Image img) {
-        return new DialogBox(text, img);
+        DialogBox db = new DialogBox(text, img);
+        db.dialog.setStyle(BOT_STYLE);
+        return db;
     }
 
     /**
-     * Creates a Lyra dialog box for error messages with red text.
+     * Creates a Lyra dialog box for error messages with light red bubble.
      *
      * @param text Lyra's error message
      * @param img The bot avatar image
-     * @return A DialogBox instance with red text styling
+     * @return A DialogBox instance with error styling
      */
     public static DialogBox getLyraErrorDialog(String text, Image img) {
         DialogBox db = new DialogBox(text, img);
-        db.dialog.setStyle("-fx-text-fill: red;");
+        db.dialog.setStyle(ERROR_STYLE);
         return db;
     }
 
