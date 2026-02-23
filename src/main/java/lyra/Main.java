@@ -21,7 +21,9 @@ public class Main extends Application {
             Scene scene = new Scene(ap);
             stage.setScene(scene);
             stage.setTitle("Lyra");
-            stage.setResizable(false);
+            stage.setResizable(true);
+            stage.setMinWidth(320);
+            stage.setMinHeight(400);
 
             MainWindow mw = fxmlLoader.<MainWindow>getController();
             mw.setLyra(lyra);
