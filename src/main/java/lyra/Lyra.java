@@ -14,15 +14,31 @@ public class Lyra {
         private final String message;
         private final boolean isError;
 
+        /**
+         * Creates a LyraResponse with the given message and error flag.
+         *
+         * @param message The response message text
+         * @param isError Whether the response represents an error
+         */
         public LyraResponse(String message, boolean isError) {
             this.message = message;
             this.isError = isError;
         }
 
+        /**
+         * Returns the response message text.
+         *
+         * @return The message string
+         */
         public String getMessage() {
             return message;
         }
 
+        /**
+         * Returns whether this response represents an error.
+         *
+         * @return true if error, false otherwise
+         */
         public boolean isError() {
             return isError;
         }
