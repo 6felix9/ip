@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -38,8 +39,8 @@ public class Storage {
      */
     private LocalDateTime parseDateTime(String input) throws LyraException {
         try {
-            DateTimeFormatter formatter =
-                    DateTimeFormatter.ofPattern("d/MM/yyyy HHmm");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/uuuu HHmm")
+                    .withResolverStyle(ResolverStyle.STRICT);
             return LocalDateTime.parse(input, formatter);
         } catch (DateTimeParseException e) {
             throw new LyraException("That date format doesn't look right. Please use d/MM/yyyy HHmm "
@@ -58,15 +59,16 @@ public class Storage {
             ArrayList<Task> tasks = new ArrayList<>();
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine();
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
                 String[] parts = line.split(" \\| ");
-                // Assertion: File format assumes at least task type and status marker
-                assert parts.length >= 2 : "File line must have at least task type and status";
-                int sizeBeforeAdd = tasks.size();
+                if (parts.length < 2) {
+                    throw new LyraException("Corrupted data file: invalid line format.");
+                }
                 Task task = createTaskFromParts(parts);
                 markTaskIfDone(task, parts[1]);
                 tasks.add(task);
-                // Assertion: Task was successfully added to list (size should increase by 1)
-                assert tasks.size() == sizeBeforeAdd + 1 : "Task should be added to list";
             }
             return tasks;
         } catch (FileNotFoundException e) {
@@ -84,17 +86,19 @@ public class Storage {
     private Task createTaskFromParts(String[] parts) throws LyraException {
         switch (parts[0]) {
         case TASK_TYPE_TODO:
-            // Assertion: Todo format assumes: T | status | description
-            assert parts.length >= 3 : "Todo line must have type, status, and description";
+            if (parts.length < 3) {
+                throw new LyraException("Corrupted data file: todo task has invalid format.");
+            }
             return new Todo(parts[2]);
         case TASK_TYPE_DEADLINE:
-            // Assertion: Deadline format assumes: D | status | description | datetime
-            assert parts.length >= 4 : "Deadline line must have type, status, description, and datetime";
+            if (parts.length < 4) {
+                throw new LyraException("Corrupted data file: deadline task has invalid format.");
+            }
             return new Deadline(parts[2], parseDateTime(parts[3]));
         case TASK_TYPE_EVENT:
-            // Assertion: Event format assumes: E | status | description | start | end
-            assert parts.length >= 5
-                    : "Event line must have type, status, description, start, and end datetime";
+            if (parts.length < 5) {
+                throw new LyraException("Corrupted data file: event task has invalid format.");
+            }
             return new Event(parts[2], parseDateTime(parts[3]), parseDateTime(parts[4]));
         default:
             throw new LyraException("I don't recognise that task type in your data file. "
@@ -120,12 +124,20 @@ public class Storage {
      * @throws LyraException If unable to write to the file
      */
     public void saveTasks(ArrayList<Task> tasks) throws LyraException {
-        try (PrintWriter fileWriter = new PrintWriter(dataFile)) {
-            for (Task task : tasks) {
-                fileWriter.println(task.toFileString());
+        try {
+            File parent = dataFile.getParentFile();
+            if (parent != null && !parent.exists()) {
+                parent.mkdirs();
+            }
+            try (PrintWriter fileWriter = new PrintWriter(dataFile)) {
+                for (Task task : tasks) {
+                    fileWriter.println(task.toFileString());
+                }
             }
         } catch (FileNotFoundException e) {
-            throw new LyraException("Unable to write to data file.");
+            throw new LyraException("Unable to write to data file. Check that the path is valid.");
+        } catch (SecurityException e) {
+            throw new LyraException("Access to the data file was denied. Check your permissions.");
         }
     }
 }

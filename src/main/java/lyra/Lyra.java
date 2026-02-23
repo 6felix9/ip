@@ -78,7 +78,7 @@ public class Lyra {
         }
 
         try {
-            String fullCommand = input.trim();
+            String fullCommand = input.trim().replaceAll("\\s+", " ");
             Command commandType = parser.getCommand(fullCommand);
             return new LyraResponse(executeCommand(commandType, fullCommand), false);
         } catch (LyraException e) {
@@ -280,7 +280,7 @@ public class Lyra {
 
         while (!isExit) {
             try {
-                String fullCommand = ui.readCommand();
+                String fullCommand = ui.readCommand().trim().replaceAll("\\s+", " ");
 
                 if (fullCommand.isEmpty()) {
                     continue;

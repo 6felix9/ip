@@ -1,5 +1,7 @@
 package lyra;
 
+import java.util.Objects;
+
 /**
  * Represents a task with a description and completion status.
  */
@@ -104,5 +106,22 @@ public class Task {
     @Override
     public String toString() {
         return ("[%s] %s".formatted(this.getStatusIcon(), this.description));
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Task)) {
+            return false;
+        }
+        Task other = (Task) obj;
+        return type == other.type && Objects.equals(description, other.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, description);
     }
 }

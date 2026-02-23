@@ -2,6 +2,7 @@ package lyra;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 /**
  * Represents a deadline task with a due date.
@@ -55,5 +56,21 @@ public class Deadline extends Task {
     public String toString() {
         return "[D]" + super.toString() + " (by: "
                 + by.format(DateTimeFormatter.ofPattern("MMM d yyyy, h:mma")) + ")";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (!(obj instanceof Deadline)) {
+            return false;
+        }
+        return Objects.equals(by, ((Deadline) obj).by);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), by);
     }
 }

@@ -3,6 +3,7 @@ package lyra;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 
 /**
  * Parses user input into commands and task objects.
@@ -13,7 +14,20 @@ public class Parser {
         UpdateType.DESCRIPTION, UpdateType.BY, UpdateType.FROM, UpdateType.TO
     };
 
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/MM/yyyy HHmm");
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/MM/uuuu HHmm")
+            .withResolverStyle(ResolverStyle.STRICT);
+
+    /**
+     * Validates that the input does not contain the pipe character, which would corrupt the data file.
+     *
+     * @param input The string to validate
+     * @throws LyraException If the input contains the pipe character
+     */
+    private void validateNoPipe(String input) throws LyraException {
+        if (input != null && input.contains("|")) {
+            throw new LyraException("The pipe character (|) is not allowed in task descriptions.");
+        }
+    }
 
     /**
      * Parse the date string into a Date object.
@@ -54,17 +68,17 @@ public class Parser {
      * @param command The todo command string
      * @return A Todo object
      */
-    public Todo parseTodo(String command) {
+    public Todo parseTodo(String command) throws LyraException {
         int spaceIndex = command.indexOf(" ");
-        // Assertion: After finding space index, it should be valid (assumes format: "todo <description>")
-        assert spaceIndex >= 0 : "Todo command must contain a space separator";
-        String description = command.substring(spaceIndex + 1);
-        // Assertion: Description should not be empty after parsing
-        assert !description.isEmpty() : "Todo description should not be empty";
-        Todo todo = new Todo(description);
-        // Assertion: Created todo should not be null
-        assert todo != null : "Created Todo should not be null";
-        return todo;
+        if (spaceIndex < 0) {
+            throw new LyraException("A todo needs a description. Try: todo your task.");
+        }
+        String description = command.substring(spaceIndex + 1).trim();
+        if (description.isEmpty()) {
+            throw new LyraException("A todo needs a description. Try: todo your task.");
+        }
+        validateNoPipe(description);
+        return new Todo(description);
     }
 
     /**
@@ -80,21 +94,26 @@ public class Parser {
         // 2. Split by the delimiter
         String[] parts = content.split(" /by ", 2);
 
+        if (parts.length > 2 || (parts.length == 2 && parts[1].contains(" /by "))) {
+            throw new LyraException("Please specify /by only once. Use: deadline description /by date.");
+        }
         if (parts.length < 2) {
             throw new LyraException("A deadline needs a due time — add /by followed by the date "
                     + "(e.g., deadline return book /by 2/12/2024 1800).");
         }
 
-        // Assertion: After validation, parts array should have exactly 2 elements
-        assert parts.length == 2 : "Parts array should have description and time after split";
-        // Assertion: Description and time should not be empty
-        assert !parts[0].isEmpty() : "Deadline description should not be empty";
-        assert !parts[1].isEmpty() : "Deadline time should not be empty";
+        String desc = parts[0].trim();
+        String timeStr = parts[1].trim();
+        if (desc.isEmpty()) {
+            throw new LyraException("A deadline needs a description. Try: deadline return book /by 2/12/2024 1800.");
+        }
+        if (timeStr.isEmpty()) {
+            throw new LyraException("A deadline needs a due time — add /by followed by the date.");
+        }
+        validateNoPipe(desc);
 
         // 3. Return the Deadline object
-        Deadline deadline = new Deadline(parts[0], parseDateTime(parts[1]));
-        // Assertion: Created deadline should not be null
-        assert deadline != null : "Created Deadline should not be null";
+        Deadline deadline = new Deadline(desc, parseDateTime(timeStr));
         return deadline;
     }
 
@@ -110,18 +129,36 @@ public class Parser {
 
         // 2. Split by the delimiter
         String[] firstSplit = content.split(" /from ", 2);
+        if (firstSplit.length > 2 || (firstSplit.length == 2 && firstSplit[1].contains(" /from "))) {
+            throw new LyraException("Please specify /from only once. Use: event desc /from start /to end.");
+        }
         if (firstSplit.length < 2) {
             throw new LyraException("An event needs a start time — please include /from followed by the date.");
         }
 
         // 3. Split by the delimiter
         String[] secondSplit = firstSplit[1].split(" /to ", 2);
+        if (secondSplit.length > 2 || (secondSplit.length == 2 && secondSplit[1].contains(" /to "))) {
+            throw new LyraException("Please specify /to only once. Use: event desc /from start /to end.");
+        }
         if (secondSplit.length < 2) {
             throw new LyraException("An event also needs an end time — please include /to followed by the date.");
         }
 
+        String desc = firstSplit[0].trim();
+        String fromStr = secondSplit[0].trim();
+        String toStr = secondSplit[1].trim();
+        if (desc.isEmpty()) {
+            throw new LyraException("An event needs a description. Try: event meeting "
+                    + "/from 2/12/2024 1000 /to 2/12/2024 1200.");
+        }
+        if (fromStr.isEmpty() || toStr.isEmpty()) {
+            throw new LyraException("An event needs both /from and /to dates.");
+        }
+        validateNoPipe(desc);
+
         // 4. Return the Event object
-        return new Event(firstSplit[0], parseDateTime(secondSplit[0]), parseDateTime(secondSplit[1]));
+        return new Event(desc, parseDateTime(fromStr), parseDateTime(toStr));
     }
 
     /**
@@ -209,6 +246,9 @@ public class Parser {
     private UpdateCommandData parseUpdateWithDelimiter(String content, String delimiter, String updateType)
             throws LyraException {
         String[] parts = content.split(delimiter, 2);
+        if (parts.length > 2 || (parts.length == 2 && parts[1].contains(delimiter))) {
+            throw new LyraException("Please specify each update parameter only once.");
+        }
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
             String hint = UpdateType.DESCRIPTION.equals(updateType)
                     ? "What's the new description? Try: update 1 /description your new task name."
@@ -217,7 +257,9 @@ public class Parser {
         }
         int index = parseUpdateIndex(parts[0].trim());
         if (UpdateType.DESCRIPTION.equals(updateType)) {
-            return new UpdateCommandData(index, parts[1].trim());
+            String newDesc = parts[1].trim();
+            validateNoPipe(newDesc);
+            return new UpdateCommandData(index, newDesc);
         }
         LocalDateTime dateValue = parseDateTime(parts[1].trim());
         return new UpdateCommandData(index, updateType, dateValue);

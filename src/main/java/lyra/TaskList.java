@@ -25,8 +25,13 @@ public class TaskList {
 
     /**
      * Add a task to the list.
+     *
+     * @throws LyraException If the task already exists in the list
      */
-    public void addTask(Task task) {
+    public void addTask(Task task) throws LyraException {
+        if (tasks.contains(task)) {
+            throw new LyraException("This task already exists in your list!");
+        }
         this.tasks.add(task);
     }
 
@@ -176,6 +181,12 @@ public class TaskList {
             break;
         default:
             throw new LyraException("Hmm, I don't recognise that update type: " + updateType + ".");
+        }
+        // Check for duplicate after update
+        for (int i = 0; i < tasks.size(); i++) {
+            if (i != data.getIndex() && task.equals(tasks.get(i))) {
+                throw new LyraException("This task already exists in your list!");
+            }
         }
         return task;
     }
