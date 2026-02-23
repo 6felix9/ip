@@ -64,6 +64,19 @@ public class DialogBox extends HBox {
     }
 
     /**
+     * Creates a Lyra dialog box for error messages with red text.
+     *
+     * @param text Lyra's error message
+     * @param img The bot avatar image
+     * @return A DialogBox instance with red text styling
+     */
+    public static DialogBox getLyraErrorDialog(String text, Image img) {
+        DialogBox db = new DialogBox(text, img);
+        db.dialog.setStyle("-fx-text-fill: red;");
+        return db;
+    }
+
+    /**
      * Flips the dialog box so the text is on the left and image is on the right (for user messages).
      */
     private void flip() {

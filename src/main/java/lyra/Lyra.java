@@ -6,6 +6,28 @@ import java.util.ArrayList;
  * Main class for the Lyra task management application.
  */
 public class Lyra {
+
+    /**
+     * Wrapper for Lyra's response that indicates whether the message is an error.
+     */
+    public static class LyraResponse {
+        private final String message;
+        private final boolean isError;
+
+        public LyraResponse(String message, boolean isError) {
+            this.message = message;
+            this.isError = isError;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public boolean isError() {
+            return isError;
+        }
+    }
+
     private Ui ui;
     private Storage storage;
     private TaskList taskList;
@@ -32,19 +54,19 @@ public class Lyra {
      * Processes a user command and returns the bot's response.
      *
      * @param input The user's input command
-     * @return The bot's response as a string
+     * @return The bot's response with message and error flag
      */
-    public String getResponse(String input) {
+    public LyraResponse getResponse(String input) {
         if (input == null || input.trim().isEmpty()) {
-            return "";
+            return new LyraResponse("", false);
         }
 
         try {
             String fullCommand = input.trim();
             Command commandType = parser.getCommand(fullCommand);
-            return executeCommand(commandType, fullCommand);
+            return new LyraResponse(executeCommand(commandType, fullCommand), false);
         } catch (LyraException e) {
-            return ui.getErrorMessage(e.getMessage());
+            return new LyraResponse(ui.getErrorMessage(e.getMessage()), true);
         }
     }
 

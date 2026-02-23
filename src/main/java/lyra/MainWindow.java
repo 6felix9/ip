@@ -68,8 +68,12 @@ public class MainWindow extends AnchorPane {
         dialogContainer.getChildren().add(DialogBox.getUserDialog(input, userImage));
 
         // Get response from Lyra
-        String response = lyra.getResponse(input);
-        dialogContainer.getChildren().add(DialogBox.getLyraDialog(response, botImage));
+        Lyra.LyraResponse response = lyra.getResponse(input);
+        if (response.isError()) {
+            dialogContainer.getChildren().add(DialogBox.getLyraErrorDialog(response.getMessage(), botImage));
+        } else {
+            dialogContainer.getChildren().add(DialogBox.getLyraDialog(response.getMessage(), botImage));
+        }
 
         // Clear input field
         userInput.clear();
