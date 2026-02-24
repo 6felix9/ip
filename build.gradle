@@ -44,7 +44,7 @@ test {
 }
 
 application {
-    mainClass.set("lyra.Main")
+    mainClass.set("lyra.Launcher")
 }
 
 shadowJar {
