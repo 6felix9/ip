@@ -83,7 +83,14 @@ public class MainWindow extends AnchorPane {
 
         // Check if user wants to exit
         if (input.trim().equalsIgnoreCase("bye")) {
-            // Could add exit logic here if needed
+            new Thread(() -> {
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                Platform.exit();
+            }).start();
         }
     }
 }
